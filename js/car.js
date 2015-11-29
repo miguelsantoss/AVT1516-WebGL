@@ -15,6 +15,7 @@ function Car(position, direction) {
 	this.current_speed = 0;
 	this.max_speed = 0.06;
 	this.backwards_friction_factor = 0.004;
+	this.backwards_friction = 0;
 	this.lastPosition = position.slice();
 
 	this.offSetX = 0.6;
@@ -54,9 +55,9 @@ Car.prototype.update = function(delta_t) {
 					  0,
 					  this.direction[0] * Math.sin(this.steer_angle) - this.direction[2] * Math.cos(this.steer_angle)];
 
-	this.backwards_friction_factor = -this.speed * this.backwards_friction_factor;
+	this.backwards_friction = -this.speed * this.backwards_friction_factor;
 
-	this.speed = this.speed + this.backwards_friction_factor * delta_t;
+	this.speed = this.speed + this.backwards_friction * delta_t;
 	this.speed = this.speed + this.acceleration * delta_t;
 
 	this.lastPosition = this.position.slice();
@@ -75,20 +76,33 @@ Car.prototype.draw = function() {
 
     mat4.translate(modelMatrix, modelMatrix, this.position);
     mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+    //mat4.rotate(modelMatrix, modelMatrix)
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textures[1]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, cube.cubeVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cube.cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    /*gl.bindBuffer(gl.ARRAY_BUFFER, cube.VertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cube.VertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, cube.cubeTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, cube.cubeTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, cube.TextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, cube.TextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cube.cubeVertexIndexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cube.VertexIndexBuffer);
     setMatrixUniforms();
-    gl.drawElements(gl.TRIANGLES, cube.cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);   
+    gl.drawElements(gl.TRIANGLES, cube.VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);  */
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, sphere.VertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, sphere.VertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexNormalBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, sphere.VertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.VertexIndexBuffer);
+    setMatrixUniforms();
+    gl.drawElements(gl.TRIANGLES, sphere.VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
 
 Car.prototype.updateBoxLimits = function() {

@@ -1,5 +1,5 @@
 var gl, gameManager;
-var cube, torus, square, sphere;
+var cube = {}, torus = {}, square = {}, sphere = {};
 
 function initGL(canvas) {
     try {
@@ -13,27 +13,254 @@ function initGL(canvas) {
     }
 }
 
+function revSmoothNormal2(p, nx, ny, smoothCos, beginEnd) {
+
+    var v1x,v1y,v2x,v2y,x,y,norm;
+    var auxX, auxY, angle;
+
+    auxX = p[0] - p[2];
+    auxY = p[1] - p[3];
+    v1x = -auxY;
+    v1y = auxX;
+    norm=Math.sqrt((v1x*v1x) + (v1y*v1y));
+    v1x /= norm;
+    v1y /= norm;
+
+    auxX = p[2] - p[4];
+    auxY = p[3] - p[5];
+    v2x = -auxY;
+    v2y = auxX;
+    norm=Math.sqrt((v2x*v2x) + (v2y*v2y));
+    v2x /= norm;
+    v2y /= norm;
+
+    angle = v1x * v2x + v1y * v2y;
+
+    if (angle > smoothCos) {
+        x = v1x + v2x;
+        y = v1y + v2y;
+    }
+    else if (beginEnd == 0) {
+        x = v2x;
+        y = v2y;
+    }
+    else  {
+        x = v1x;
+        y = v1y;
+    
+    }
+
+    norm=Math.sqrt(x*x+ y*y);
+    x /= norm;
+    y /= norm;
+
+    nx = x;
+    ny = y;
+    if (angle > smoothCos)
+        return 1;
+    else
+        return 0;
+}
+
+function VAO(numP, p, points, sides, smoothCos, object) {
+    var numSides = sides, numPoints = numP + 2;
+    var vertex = [];
+    var normal = [];
+    var textco = [];
+    var inc = 2 * Math.PI / sides, nx, ny, delta, smooth, k = 0, smoothness = [];
+
+    for(var i=0; i < numP; i++) {
+        revSmoothNormal2(points.slice(i*2),nx,ny, smoothCos, 0);
+        for(var j=0; j<=numSides;j++) {
+
+            if ((i == 0 && p[0] == 0.0) || ( i == numP-1 && p[(i+1)*2] == 0.0))
+                delta = inc * 0.5;
+            else
+                delta = 0.0;
+
+            normal[((k)*(numSides+1) + j)*4]   = nx * Math.cos(j*inc+delta);
+            normal[((k)*(numSides+1) + j)*4+1] = ny;
+            normal[((k)*(numSides+1) + j)*4+2] = nx * Math.sin(-j*inc+delta);
+            normal[((k)*(numSides+1) + j)*4+3] = 0.0;
+
+            vertex[((k)*(numSides+1) + j)*4]   = p[i*2] * Math.cos(j*inc);
+            vertex[((k)*(numSides+1) + j)*4+1] = p[(i*2)+1];
+            vertex[((k)*(numSides+1) + j)*4+2] = p[i*2] * Math.sin(-j*inc);
+            vertex[((k)*(numSides+1) + j)*4+3] = 1.0;
+
+            textco[((k)*(numSides+1) + j)*4]   = ((j+0.0)/numSides);
+            textco[((k)*(numSides+1) + j)*4+1] = (i+0.0)/(numP-1);
+            textco[((k)*(numSides+1) + j)*4+2] = 0;
+            textco[((k)*(numSides+1) + j)*4+3] = 1.0;
+        }
+        k++;
+        if (i < numP-1) {
+            smooth = revSmoothNormal2(points.slice((i+1)*2),nx,ny, smoothCos, 1);
+
+            if (!smooth) {
+                smoothness.push_back(1);
+                for(var j=0; j<=numSides;j++) {
+
+                normal[((k)*(numSides+1) + j)*4]   = nx * Math.cos(j*inc);
+                normal[((k)*(numSides+1) + j)*4+1] = ny;
+                normal[((k)*(numSides+1) + j)*4+2] = nx * Math.sin(-j*inc);
+                normal[((k)*(numSides+1) + j)*4+3] = 0.0;
+
+                vertex[((k)*(numSides+1) + j)*4]   = p[(i+1)*2] * Math.cos(j*inc);
+                vertex[((k)*(numSides+1) + j)*4+1] = p[((i+1)*2)+1];
+                vertex[((k)*(numSides+1) + j)*4+2] = p[(i+1)*2] * Math.sin(-j*inc);
+                vertex[((k)*(numSides+1) + j)*4+3] = 1.0;
+
+                textco[((k)*(numSides+1) + j)*4]   = ((j+0.0)/numSides);
+                textco[((k)*(numSides+1) + j)*4+1] = (i+1+0.0)/(numP-1);
+                textco[((k)*(numSides+1) + j)*4+2] = 0;
+                textco[((k)*(numSides+1) + j)*4+3] = 1.0;
+                }
+                k++;
+            }
+            else
+                smoothness.push(0);
+        }
+    }
+    var faceIndex = [], count = 0;
+    k = 0;
+    for (var i = 0; i < numP-1; ++i) {
+        for (var j = 0; j < numSides; ++j) {
+        
+            /*if (i != 0 || p[0] != 0.0)*/ {
+                faceIndex[count++] = k * (numSides+1) + j;
+                faceIndex[count++] = (k+1) * (numSides+1) + j + 1;
+                faceIndex[count++] = (k+1) * (numSides+1) + j;
+            }
+            /*if (i != numP-2 || p[(numP-1)*2] != 0.0)*/ {
+                faceIndex[count++] = k * (numSides+1) + j;
+                faceIndex[count++] = k * (numSides+1) + j + 1;
+                faceIndex[count++] = (k+1) * (numSides+1) + j + 1;
+            }
+
+        }
+        k++;
+        k += smoothness[i]; 
+    }
+
+    var numVertices = numP*2 * (numSides+1);
+    object.VertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, object.VertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex), gl.STATIC_DRAW);
+    object.VertexPositionBuffer.numItems = vertex.length / 3;
+    object.VertexPositionBuffer.itemSize  = 3;
+
+    object.TextureCoordBuffer   = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, object.TextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textco), gl.STATIC_DRAW);
+    object.TextureCoordBuffer.numItems = textco.length / 2;
+    object.TextureCoordBuffer.itemSize  = 2;
+
+    object.VertexIndexBuffer   = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, object.VertexIndexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Uint16Array(faceIndex), gl.STATIC_DRAW);
+    object.VertexIndexBuffer.numItems = count;
+    object.VertexIndexBuffer.itemSize  = 1;
+
+    console.log(torus);
+}
+
 
 function initBuffers() {
-    cube = {};
-    cube.cubeVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cube.cubeVertexPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    cube.cubeVertexPositionBuffer.itemSize = 3;
-    cube.cubeVertexPositionBuffer.numItems = 24;
+    //cube buffers inicialization
+    cube.VertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cube.VertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeVertices), gl.STATIC_DRAW);
+    cube.VertexPositionBuffer.itemSize = 3;
+    cube.VertexPositionBuffer.numItems = 24;
 
-    cube.cubeTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cube.cubeTextureCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
-    cube.cubeTextureCoordBuffer.itemSize = 2;
-    cube.cubeTextureCoordBuffer.numItems = 24;
+    cube.TextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cube.TextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeTextureCoords), gl.STATIC_DRAW);
+    cube.TextureCoordBuffer.itemSize = 2;
+    cube.TextureCoordBuffer.numItems = 24;
 
-    cube.cubeVertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cube.cubeVertexIndexBuffer);
+    cube.VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cube.VertexIndexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
-    cube.cubeVertexIndexBuffer.itemSize = 1;
-    cube.cubeVertexIndexBuffer.numItems = 36;
+    cube.VertexIndexBuffer.itemSize = 1;
+    cube.VertexIndexBuffer.numItems = 36;
+
+    var latitudeBands = 30;
+    var longitudeBands = 30;
+    var radius = 2;
+
+    var vertexPositionData = [];
+    var normalData = [];
+    var textureCoordData = [];
+    for (var latNumber=0; latNumber <= latitudeBands; latNumber++) {
+        var theta = latNumber * Math.PI / latitudeBands;
+        var sinTheta = Math.sin(theta);
+        var cosTheta = Math.cos(theta);
+
+        for (var longNumber=0; longNumber <= longitudeBands; longNumber++) {
+            var phi = longNumber * 2 * Math.PI / longitudeBands;
+            var sinPhi = Math.sin(phi);
+            var cosPhi = Math.cos(phi);
+
+            var x = cosPhi * sinTheta;
+            var y = cosTheta;
+            var z = sinPhi * sinTheta;
+            var u = 1 - (longNumber / longitudeBands);
+            var v = 1 - (latNumber / latitudeBands);
+
+            normalData.push(x);
+            normalData.push(y);
+            normalData.push(z);
+            textureCoordData.push(u);
+            textureCoordData.push(v);
+            vertexPositionData.push(radius * x);
+            vertexPositionData.push(radius * y);
+            vertexPositionData.push(radius * z);
+        }
+    }
+
+    var indexData = [];
+    for (var latNumber=0; latNumber < latitudeBands; latNumber++) {
+        for (var longNumber=0; longNumber < longitudeBands; longNumber++) {
+            var first = (latNumber * (longitudeBands + 1)) + longNumber;
+            var second = first + longitudeBands + 1;
+            indexData.push(first);
+            indexData.push(second);
+            indexData.push(first + 1);
+
+            indexData.push(second);
+            indexData.push(second + 1);
+            indexData.push(first + 1);
+        }
+    }
+
+    sphere.VertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalData), gl.STATIC_DRAW);
+    sphere.VertexNormalBuffer.itemSize = 3;
+    sphere.VertexNormalBuffer.numItems = normalData.length / 3;
+
+    sphere.VertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexTextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordData), gl.STATIC_DRAW);
+    sphere.VertexTextureCoordBuffer.itemSize = 2;
+    sphere.VertexTextureCoordBuffer.numItems = textureCoordData.length / 2;
+
+    sphere.VertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData), gl.STATIC_DRAW);
+    sphere.VertexPositionBuffer.itemSize = 3;
+    sphere.VertexPositionBuffer.numItems = vertexPositionData.length / 3;
+
+    sphere.VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.VertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData), gl.STATIC_DRAW);
+    sphere.VertexIndexBuffer.itemSize = 1;
+    sphere.VertexIndexBuffer.numItems = indexData.length;
 }
+
+
 var textures = [];
 
 function loadImage(url, callback) {
@@ -249,4 +476,16 @@ function handleKeys() {
         gameManager.car.weel_angle  =   0;
     }
 
+    if (currentlyPressedKeys[49]) {
+        gameManager.activeCamera = 0;
+    }
+    else if (currentlyPressedKeys[50]) {
+        gameManager.activeCamera = 1;
+    }
+    else if (currentlyPressedKeys[51]) {
+
+    }
+    else if (currentlyPressedKeys[52]) {
+
+    }
 }

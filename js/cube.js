@@ -1,4 +1,4 @@
-var vertices = [
+var cubeVertices = [
             // Front face
             -1.0, -1.0,  1.0,
              1.0, -1.0,  1.0,
@@ -36,7 +36,7 @@ var vertices = [
             -1.0,  1.0, -1.0
     ];
 
-    var textureCoords = [
+    var cubeTextureCoords = [
           // Front face
           0.0, 0.0,
           1.0, 0.0,
