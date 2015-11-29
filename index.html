@@ -1,15 +1,56 @@
-<!DOCTYPE html>
 <html>
-<head>
-	<title>MicroMachines</title>
-	<script type="text/javascript" src="gl-matrix-min.js"></script>
-	<script type="text/javascript">
-	    function webGLStart() {
-	        
-	    }
-	</script>
-</head>
-<body onload="webGLStart();">
+	<head>
+		<title>Micromachines</title>
+		
+		<script id="shader-vs" type="x-shader/x-vertex">
+		    attribute vec3 aVertexPosition;
+		    attribute vec2 aTextureCoord;
 
-</body>
+		    uniform mat4 uMVMatrix;
+		    uniform mat4 uPMatrix;
+
+		    varying vec2 vTextureCoord;
+
+		    void main(void) {
+		        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		        vTextureCoord = aTextureCoord;
+		    }
+		</script>
+
+		<script id="shader-fs" type="x-shader/x-fragment">
+		    precision mediump float;
+
+		    varying vec2 vTextureCoord;
+
+		    uniform sampler2D uSampler;
+
+		    void main(void) {
+		        gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+		    }
+		</script>
+
+		<script type="text/javascript" src="js/gl-matrix-min.js"></script>
+		<script type="text/javascript" src="js/webgl-utils.js"></script>
+		<script type="text/javascript" src="js/math.js"></script>
+		<script type="text/javascript" src="js/shaderInit.js"></script>
+		<script type="text/javascript" src="js/cube.js"></script>
+		<script type="text/javascript" src="js/Cameras.js"></script>
+		<script type="text/javascript" src="js/gm.js"></script>
+		<script type="text/javascript" src="js/car.js"></script>
+		<script type="text/javascript" src="js/script.js"></script>
+		<script type="text/javascript" src="js/keyHandler.js"></script>
+		<style type="text/css">
+		    #loadingtext {
+		        position:absolute;
+		        top:250px;
+		        left:150px;
+		        font-size:2em;
+		        color: white;
+		    }
+		</style>
+	</head>
+	<body onload="webGLStart();">
+		<canvas id="micromachines-canvas" width="800" height="600"></canvas>
+		<div id="loadingtext">Loading world...</div>
+	</body>
 </html>
