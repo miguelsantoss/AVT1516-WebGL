@@ -59,3 +59,8 @@ function rotateCoordinate(point, center, angle) {
 				   center[1] - (point[0] - center[0])*Math.cos(angle) + (point[1] - center[1])*Math.cos(angle)];
 	return rotated;
 }
+
+function normalize(vec) {
+	var length = vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
+	return [vec[0] / length, vec[1] / length, vec[2] / length];
+}

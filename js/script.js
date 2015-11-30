@@ -1,5 +1,5 @@
 var gl, gameManager;
-var cube = {}, torus = {}, square = {}, sphere = {};
+var cube = {}, torus = {}, quad = {}, sphere = {};
 
 function initGL(canvas) {
     try {
@@ -13,178 +13,55 @@ function initGL(canvas) {
     }
 }
 
-function revSmoothNormal2(p, nx, ny, smoothCos, beginEnd) {
-
-    var v1x,v1y,v2x,v2y,x,y,norm;
-    var auxX, auxY, angle;
-
-    auxX = p[0] - p[2];
-    auxY = p[1] - p[3];
-    v1x = -auxY;
-    v1y = auxX;
-    norm=Math.sqrt((v1x*v1x) + (v1y*v1y));
-    v1x /= norm;
-    v1y /= norm;
-
-    auxX = p[2] - p[4];
-    auxY = p[3] - p[5];
-    v2x = -auxY;
-    v2y = auxX;
-    norm=Math.sqrt((v2x*v2x) + (v2y*v2y));
-    v2x /= norm;
-    v2y /= norm;
-
-    angle = v1x * v2x + v1y * v2y;
-
-    if (angle > smoothCos) {
-        x = v1x + v2x;
-        y = v1y + v2y;
-    }
-    else if (beginEnd == 0) {
-        x = v2x;
-        y = v2y;
-    }
-    else  {
-        x = v1x;
-        y = v1y;
-    
-    }
-
-    norm=Math.sqrt(x*x+ y*y);
-    x /= norm;
-    y /= norm;
-
-    nx = x;
-    ny = y;
-    if (angle > smoothCos)
-        return 1;
-    else
-        return 0;
-}
-
-function VAO(numP, p, points, sides, smoothCos, object) {
-    var numSides = sides, numPoints = numP + 2;
-    var vertex = [];
-    var normal = [];
-    var textco = [];
-    var inc = 2 * Math.PI / sides, nx, ny, delta, smooth, k = 0, smoothness = [];
-
-    for(var i=0; i < numP; i++) {
-        revSmoothNormal2(points.slice(i*2),nx,ny, smoothCos, 0);
-        for(var j=0; j<=numSides;j++) {
-
-            if ((i == 0 && p[0] == 0.0) || ( i == numP-1 && p[(i+1)*2] == 0.0))
-                delta = inc * 0.5;
-            else
-                delta = 0.0;
-
-            normal[((k)*(numSides+1) + j)*4]   = nx * Math.cos(j*inc+delta);
-            normal[((k)*(numSides+1) + j)*4+1] = ny;
-            normal[((k)*(numSides+1) + j)*4+2] = nx * Math.sin(-j*inc+delta);
-            normal[((k)*(numSides+1) + j)*4+3] = 0.0;
-
-            vertex[((k)*(numSides+1) + j)*4]   = p[i*2] * Math.cos(j*inc);
-            vertex[((k)*(numSides+1) + j)*4+1] = p[(i*2)+1];
-            vertex[((k)*(numSides+1) + j)*4+2] = p[i*2] * Math.sin(-j*inc);
-            vertex[((k)*(numSides+1) + j)*4+3] = 1.0;
-
-            textco[((k)*(numSides+1) + j)*4]   = ((j+0.0)/numSides);
-            textco[((k)*(numSides+1) + j)*4+1] = (i+0.0)/(numP-1);
-            textco[((k)*(numSides+1) + j)*4+2] = 0;
-            textco[((k)*(numSides+1) + j)*4+3] = 1.0;
-        }
-        k++;
-        if (i < numP-1) {
-            smooth = revSmoothNormal2(points.slice((i+1)*2),nx,ny, smoothCos, 1);
-
-            if (!smooth) {
-                smoothness.push_back(1);
-                for(var j=0; j<=numSides;j++) {
-
-                normal[((k)*(numSides+1) + j)*4]   = nx * Math.cos(j*inc);
-                normal[((k)*(numSides+1) + j)*4+1] = ny;
-                normal[((k)*(numSides+1) + j)*4+2] = nx * Math.sin(-j*inc);
-                normal[((k)*(numSides+1) + j)*4+3] = 0.0;
-
-                vertex[((k)*(numSides+1) + j)*4]   = p[(i+1)*2] * Math.cos(j*inc);
-                vertex[((k)*(numSides+1) + j)*4+1] = p[((i+1)*2)+1];
-                vertex[((k)*(numSides+1) + j)*4+2] = p[(i+1)*2] * Math.sin(-j*inc);
-                vertex[((k)*(numSides+1) + j)*4+3] = 1.0;
-
-                textco[((k)*(numSides+1) + j)*4]   = ((j+0.0)/numSides);
-                textco[((k)*(numSides+1) + j)*4+1] = (i+1+0.0)/(numP-1);
-                textco[((k)*(numSides+1) + j)*4+2] = 0;
-                textco[((k)*(numSides+1) + j)*4+3] = 1.0;
-                }
-                k++;
-            }
-            else
-                smoothness.push(0);
-        }
-    }
-    var faceIndex = [], count = 0;
-    k = 0;
-    for (var i = 0; i < numP-1; ++i) {
-        for (var j = 0; j < numSides; ++j) {
-        
-            /*if (i != 0 || p[0] != 0.0)*/ {
-                faceIndex[count++] = k * (numSides+1) + j;
-                faceIndex[count++] = (k+1) * (numSides+1) + j + 1;
-                faceIndex[count++] = (k+1) * (numSides+1) + j;
-            }
-            /*if (i != numP-2 || p[(numP-1)*2] != 0.0)*/ {
-                faceIndex[count++] = k * (numSides+1) + j;
-                faceIndex[count++] = k * (numSides+1) + j + 1;
-                faceIndex[count++] = (k+1) * (numSides+1) + j + 1;
-            }
-
-        }
-        k++;
-        k += smoothness[i]; 
-    }
-
-    var numVertices = numP*2 * (numSides+1);
-    object.VertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, object.VertexPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex), gl.STATIC_DRAW);
-    object.VertexPositionBuffer.numItems = vertex.length / 3;
-    object.VertexPositionBuffer.itemSize  = 3;
-
-    object.TextureCoordBuffer   = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, object.TextureCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textco), gl.STATIC_DRAW);
-    object.TextureCoordBuffer.numItems = textco.length / 2;
-    object.TextureCoordBuffer.itemSize  = 2;
-
-    object.VertexIndexBuffer   = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, object.VertexIndexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Uint16Array(faceIndex), gl.STATIC_DRAW);
-    object.VertexIndexBuffer.numItems = count;
-    object.VertexIndexBuffer.itemSize  = 1;
-
-    console.log(torus);
-}
-
-
 function initBuffers() {
     //cube buffers inicialization
     cube.VertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cube.VertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeVertices), gl.STATIC_DRAW);
-    cube.VertexPositionBuffer.itemSize = 3;
+    cube.VertexPositionBuffer.itemSize = 4;
     cube.VertexPositionBuffer.numItems = 24;
 
-    cube.TextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cube.TextureCoordBuffer);
+    cube.VertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cube.VertexTextureCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeTextureCoords), gl.STATIC_DRAW);
-    cube.TextureCoordBuffer.itemSize = 2;
-    cube.TextureCoordBuffer.numItems = 24;
+    cube.VertexTextureCoordBuffer.itemSize = 4;
+    cube.VertexTextureCoordBuffer.numItems = 24;
+
+    cube.VertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cube.VertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeNormals), gl.STATIC_DRAW);
+    cube.VertexNormalBuffer.itemSize = 4;
+    cube.VertexNormalBuffer.numItems = 24;
 
     cube.VertexIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cube.VertexIndexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
     cube.VertexIndexBuffer.itemSize = 1;
-    cube.VertexIndexBuffer.numItems = 36;
+    cube.VertexIndexBuffer.numItems = cubeVertexIndices.length;
+
+    quad.VertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad.VertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(quadVertices), gl.STATIC_DRAW);
+    quad.VertexPositionBuffer.itemSize = 4;
+    quad.VertexPositionBuffer.numItems = 24;
+
+    quad.VertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad.VertexTextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(quadTexCoords), gl.STATIC_DRAW);
+    quad.VertexTextureCoordBuffer.itemSize = 4;
+    quad.VertexTextureCoordBuffer.numItems = 24;
+
+    quad.VertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad.VertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(quadNormals), gl.STATIC_DRAW);
+    quad.VertexNormalBuffer.itemSize = 4;
+    quad.VertexNormalBuffer.numItems = 24;
+
+    quad.VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, quad.VertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(quadFaceIndex), gl.STATIC_DRAW);
+    quad.VertexIndexBuffer.itemSize = 1;
+    quad.VertexIndexBuffer.numItems = quadFaceIndex.length;
 
     var latitudeBands = 30;
     var longitudeBands = 30;
@@ -258,6 +135,27 @@ function initBuffers() {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData), gl.STATIC_DRAW);
     sphere.VertexIndexBuffer.itemSize = 1;
     sphere.VertexIndexBuffer.numItems = indexData.length;
+
+    torus.VertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, torus.VertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(torusNormals), gl.STATIC_DRAW);
+    torus.VertexNormalBuffer.itemSize = 4;
+
+    torus.VertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, torus.VertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(torusVertexPositions), gl.STATIC_DRAW);
+    torus.VertexPositionBuffer.itemSize = 4;
+
+    torus.VertexTextureBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, torus.VertexTextureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(torusTextureCoords), gl.STATIC_DRAW);
+    torus.VertexTextureBuffer.itemSize = 4;
+
+    torus.VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, torus.VertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(torusIndex), gl.STATIC_DRAW);
+    torus.VertexIndexBuffer.itemSize = 1;
+    torus.VertexIndexBuffer.numItems = torusIndex.length;
 }
 
 

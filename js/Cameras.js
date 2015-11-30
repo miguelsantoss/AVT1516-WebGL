@@ -19,9 +19,9 @@ function PerspectiveCamera(fov, ratio, near, far, position, direction) {
 	this.position  = position;
 	this.direction = direction;
 
-	this.camX = 0;
-	this.camY = 0;
-	this.camZ = 0;
+	this.camX      = 0;
+	this.camY      = 0;
+	this.camZ      = 0;
 }
 
 OrthogonalCamera.prototype.computeProjection = function() {
