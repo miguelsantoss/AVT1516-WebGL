@@ -18,22 +18,10 @@ function Car(position, direction) {
 	this.backwards_friction = 0;
 	this.lastPosition = position.slice();
 
-	this.offSetX = 0.6;
-	this.offSetZ = 0.4;
-
-	var rotated1 = rotateCoordinate([this.position[0] + this.offSetX, this.position[2] + this.offSetZ],
-									[this.position[0], this.position[2]],
-									this.steer_angle);
-
-	var rotated2 = rotateCoordinate([this.position[0] - this.offSetX, this.position[2] - this.offSetZ],
-									[this.position[0], this.position[2]],
-									this.steer_angle);
-
-	this.Xmax = rotated1[0];
-	this.Xmin = rotated2[0];
-
-	this.Zmax = rotated1[1];
-	this.Zmin = rotated2[1];
+	this.AABBbox = {};
+	this.AABBbox.offSetX = 0.6;
+	this.AABBbox.offSetZ = 0.4;
+	this.updateAABBbox();
 }
 
 Car.prototype.update = function(delta_t) {
@@ -68,7 +56,7 @@ Car.prototype.update = function(delta_t) {
 					 this.position[1] + delta_t * this.speedVec3[1],
 					 this.position[2] + delta_t * this.speedVec3[2]];
 
-	this.updateBoxLimits();
+	this.updateAABBbox();
 }
 
 Car.prototype.draw = function() {
@@ -80,18 +68,18 @@ Car.prototype.draw = function() {
     quadDraw();
 }
 
-Car.prototype.updateBoxLimits = function() {
-	var rotated1 = rotateCoordinate([this.position[0] + this.offSetX, this.position[2] + this.offSetZ],
+Car.prototype.updateAABBbox = function() {
+	var rotated1 = rotateCoordinate([this.position[0] + this.AABBbox.offSetX, this.position[2] + this.AABBbox.offSetZ],
 									[this.position[0], this.position[2]],
 									this.steer_angle);
 
-	var rotated2 = rotateCoordinate([this.position[0] - this.offSetX, this.position[2] - this.offSetZ],
+	var rotated2 = rotateCoordinate([this.position[0] - this.AABBbox.offSetX, this.position[2] - this.AABBbox.offSetZ],
 									[this.position[0], this.position[2]],
 									this.steer_angle);
 
-	this.Xmax = rotated1[0];
-	this.Xmin = rotated2[0];
+	this.AABBbox.Xmax = rotated1[0];
+	this.AABBbox.Xmin = rotated2[0];
 
-	this.Zmax = rotated1[1];
-	this.Zmin = rotated2[1];
+	this.AABBbox.Zmax = rotated1[1];
+	this.AABBbox.Zmin = rotated2[1];
 }
