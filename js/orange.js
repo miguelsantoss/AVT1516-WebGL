@@ -21,7 +21,7 @@ Orange.prototype.update = function(delta_t) {
 }
 
 Orange.prototype.draw = function() {
-    var circumference = 2 * Math.PI * 10;
+    var circumference = 2 * Math.PI * 1;
     var angle = this.angle;
     angle += this.distanceDone / circumference * 360;
     this.distanceDone = 0;
@@ -33,7 +33,7 @@ Orange.prototype.draw = function() {
 	gameManager.matrices.pushMatrix(modelID);
     mat4.translate(modelMatrix, modelMatrix, this.position);
     mat4.scale(modelMatrix, modelMatrix, [0.5, 0.5, 0.5]);
-    mat4.rotate(modelMatrix, modelMatrix, angle, rotationAxis);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(angle), rotationAxis);
     //TODO fix rotation -- too fast
 
     gl.activeTexture(gl.TEXTURE0);

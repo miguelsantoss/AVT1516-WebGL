@@ -7,7 +7,7 @@ function Car(position, direction) {
 	this.speedVec3 = [0, 0, 0];
 	this.acceleration_factor = 0.000035;
 	this.acceleration_input = 0;
-	this.angle = 0;
+	this.carAngle = 0;
 	this.weel_angle = 0;
 	this.steer_angle = 1; 
 	this.steer_input = 0;
@@ -32,17 +32,17 @@ Car.prototype.update = function(delta_t) {
 
 	if (this.speed >= 0) {
 		this.steer_angle = this.steer_input * 0.0174532925;
-		this.angle = this.angle - this.steer_input;
+		this.carAngle = this.carAngle - this.steer_input;
 	}
 	else {
 		this.steer_angle = -this.steer_input * 0.0174532925;
-		this.angle = this.angle + this.steer_input;
+		this.carAngle = this.carAngle + this.steer_input;
 	}
 
 	this.direction = [this.direction[0] * Math.cos(this.steer_angle) - this.direction[2] * Math.sin(this.steer_angle),
 					  0,
 					  this.direction[0] * Math.sin(this.steer_angle) + this.direction[2] * Math.cos(this.steer_angle)];
-
+	
 	this.backwards_friction = -this.speed * this.backwards_friction_factor;
 
 	this.speed = this.speed + this.backwards_friction * delta_t;
@@ -67,7 +67,7 @@ Car.prototype.draw = function() {
 	gameManager.matrices.pushMatrix(modelID);
     mat4.translate(modelMatrix, modelMatrix, this.position);
     mat4.scale(modelMatrix, modelMatrix, [0.5, 0.5, 0.5]);
-    mat4.rotate(modelMatrix, modelMatrix, this.angle, [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(this.carAngle), [0, 1, 0]);
     mat4.translate(modelMatrix, modelMatrix, [-0.7, 0.0, -0.5]);
 
     gameManager.matrices.pushMatrix(modelID);
@@ -88,7 +88,7 @@ Car.prototype.draw = function() {
     mat4.scale(modelMatrix, modelMatrix, [0.7, 0.02, 0.45]);
     //WINDOWS: nr1 - left
     gl.bindTexture(gl.TEXTURE_2D, textures[0]);
-    //cubeDraw();
+    cubeDraw();
     gameManager.matrices.popMatrix(modelID);
 
 	gameManager.matrices.popMatrix(modelID);
