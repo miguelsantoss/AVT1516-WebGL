@@ -39,6 +39,7 @@ function initBuffers() {
     cube.VertexIndexBuffer.itemSize = 1;
     cube.VertexIndexBuffer.numItems = cubeVertexIndices.length;
 
+    //quad buffers inicialization
     quad.VertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, quad.VertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(quadVertices), gl.STATIC_DRAW);
@@ -89,11 +90,17 @@ function initBuffers() {
             normalData.push(x);
             normalData.push(y);
             normalData.push(z);
+            normalData.push(1.0);
+
             textureCoordData.push(u);
             textureCoordData.push(v);
+            textureCoordData.push(1.0);
+            textureCoordData.push(1.0);
+
             vertexPositionData.push(radius * x);
             vertexPositionData.push(radius * y);
             vertexPositionData.push(radius * z);
+            vertexPositionData.push(1.0);
         }
     }
 
@@ -112,23 +119,24 @@ function initBuffers() {
         }
     }
 
-    sphere.VertexNormalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexNormalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalData), gl.STATIC_DRAW);
-    sphere.VertexNormalBuffer.itemSize = 3;
-    sphere.VertexNormalBuffer.numItems = normalData.length / 3;
+    //sphere buffers inicialization
+    sphere.VertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData), gl.STATIC_DRAW);
+    sphere.VertexPositionBuffer.itemSize = 4;
+    sphere.VertexPositionBuffer.numItems = vertexPositionData.length / 4;
 
     sphere.VertexTextureCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexTextureCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordData), gl.STATIC_DRAW);
-    sphere.VertexTextureCoordBuffer.itemSize = 2;
-    sphere.VertexTextureCoordBuffer.numItems = textureCoordData.length / 2;
+    sphere.VertexTextureCoordBuffer.itemSize = 4;
+    sphere.VertexTextureCoordBuffer.numItems = textureCoordData.length / 4;
 
-    sphere.VertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData), gl.STATIC_DRAW);
-    sphere.VertexPositionBuffer.itemSize = 3;
-    sphere.VertexPositionBuffer.numItems = vertexPositionData.length / 3;
+    sphere.VertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.VertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalData), gl.STATIC_DRAW);
+    sphere.VertexNormalBuffer.itemSize = 4;
+    sphere.VertexNormalBuffer.numItems = normalData.length / 4;
 
     sphere.VertexIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.VertexIndexBuffer);
@@ -136,11 +144,7 @@ function initBuffers() {
     sphere.VertexIndexBuffer.itemSize = 1;
     sphere.VertexIndexBuffer.numItems = indexData.length;
 
-    torus.VertexNormalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, torus.VertexNormalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(torusNormals), gl.STATIC_DRAW);
-    torus.VertexNormalBuffer.itemSize = 4;
-
+    //torus buffers inicialization
     torus.VertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, torus.VertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(torusVertexPositions), gl.STATIC_DRAW);
@@ -150,6 +154,11 @@ function initBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, torus.VertexTextureBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(torusTextureCoords), gl.STATIC_DRAW);
     torus.VertexTextureBuffer.itemSize = 4;
+
+    torus.VertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, torus.VertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(torusNormals), gl.STATIC_DRAW);
+    torus.VertexNormalBuffer.itemSize = 4;
 
     torus.VertexIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, torus.VertexIndexBuffer);
@@ -205,8 +214,8 @@ function createTextures(images) {
 
 function setMatrixUniforms() {
 	computeMatrices();
-    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, projectionMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, modelViewMatrix);
+    gl.uniformMatrix4fv(shaderProgram.pvm_uniformId, false, projModelViewMatrix);
+    gl.uniformMatrix4fv(shaderProgram.vm_uniformId, false, modelViewMatrix);
 }
 
 function drawScene() {

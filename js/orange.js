@@ -29,10 +29,10 @@ Orange.prototype.draw = function() {
     var norm = normalize(this.speed);
     var rotationAxis = [norm[2], 0, -norm[0]];
 
-	mat4.identity(modelMatrix);
 
+	gameManager.matrices.pushMatrix(modelID);
     mat4.translate(modelMatrix, modelMatrix, this.position);
-    mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+    mat4.scale(modelMatrix, modelMatrix, [0.5, 0.5, 0.5]);
     mat4.rotate(modelMatrix, modelMatrix, angle, rotationAxis);
     //TODO fix rotation -- too fast
 
@@ -53,6 +53,8 @@ Orange.prototype.draw = function() {
     setMatrixUniforms();
     gl.drawElements(gl.TRIANGLES, sphere.VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     gl.bindTexture(gl.TEXTURE_2D, null);
+
+    gameManager.matrices.popMatrix(modelID);
 }
 
 Orange.prototype.updateAABBbox = function() {

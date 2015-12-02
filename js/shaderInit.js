@@ -51,13 +51,32 @@ function initShaders() {
 
     gl.useProgram(shaderProgram);
 
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "VertexPosition");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "VertexNormal");
+    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "texCoord");
     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
 
-    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+    shaderProgram.pvm_uniformId = gl.getUniformLocation(shaderProgram, "m_pvm");
+    shaderProgram.vm_uniformId = gl.getUniformLocation(shaderProgram, "m_viewModel");
+    shaderProgram.normal_uniformId = gl.getUniformLocation(shaderProgram, "m_normal");
+    shaderProgram.tex_loc_1 = gl.getUniformLocation(shaderProgram, "texmap1");
+    shaderProgram.tex_loc_2 = gl.getUniformLocation(shaderProgram, "texmap2");
+    shaderProgram.texUse = gl.getUniformLocation(shaderProgram, "useTextures");
+    shaderProgram.useLights = gl.getUniformLocation(shaderProgram, "useLights");
+    shaderProgram.writeMode = gl.getUniformLocation(shaderProgram, "writingMode");
+    shaderProgram.vWriteMode = gl.getUniformLocation(shaderProgram, "vWritingMode");
+    shaderProgram.texMode = gl.getUniformLocation(shaderProgram, "texMode");
+    shaderProgram.fogState = gl.getUniformLocation(shaderProgram, "fogState");
+    shaderProgram.fogMode = gl.getUniformLocation(shaderProgram, "fogMode");
+    shaderProgram.fogColor = gl.getUniformLocation(shaderProgram, "fogColor");
+    shaderProgram. fogDensity = gl.getUniformLocation(shaderProgram, "fogDensity");
+    shaderProgram.particleMode = gl.getUniformLocation(shaderProgram, "particleMode");
+    shaderProgram.sun = gl.getUniformLocation(shaderProgram, "sun");
+    shaderProgram.flares = gl.getUniformLocation(shaderProgram, "flares");
+    shaderProgram.uniColor = gl.getUniformLocation(shaderProgram, "overrideColor");
 }
+

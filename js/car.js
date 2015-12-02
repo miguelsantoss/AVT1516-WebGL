@@ -32,7 +32,7 @@ Car.prototype.update = function(delta_t) {
 
 	if (this.speed >= 0) {
 		this.steer_angle = this.steer_input * 0.0174532925;
-		this._angle = this._angle - this.steer_input;
+		this.angle = this.angle - this.steer_input;
 	}
 	else {
 		this.steer_angle = -this.steer_input * 0.0174532925;
@@ -60,12 +60,40 @@ Car.prototype.update = function(delta_t) {
 }
 
 Car.prototype.draw = function() {
-	mat4.identity(modelMatrix);
+	gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, textures[1]);
+    gl.uniform1i(shaderProgram.samplerUniform, 0);
 
+	gameManager.matrices.pushMatrix(modelID);
     mat4.translate(modelMatrix, modelMatrix, this.position);
-    mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+    mat4.scale(modelMatrix, modelMatrix, [0.5, 0.5, 0.5]);
+    mat4.rotate(modelMatrix, modelMatrix, this.angle, [0, 1, 0]);
+    mat4.translate(modelMatrix, modelMatrix, [-0.7, 0.0, -0.5]);
 
-    quadDraw();
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.scale(modelMatrix, modelMatrix, [1.4, 0.5, 1.0]);
+    //BODY
+    cubeDraw();
+
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [0.13, 1.55, 0.13]);
+    mat4.scale(modelMatrix, modelMatrix, [0.74, 0.05, 0.74]);
+    //ROOF
+    cubeDraw();
+    gameManager.matrices.popMatrix(modelID);
+
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [0.15, 1.1, 0.15]);
+    mat4.rotate(modelMatrix, modelMatrix, -Math.PI/2, [1, 0, 0]);
+    mat4.scale(modelMatrix, modelMatrix, [0.7, 0.02, 0.45]);
+    //WINDOWS: nr1 - left
+    gl.bindTexture(gl.TEXTURE_2D, textures[0]);
+    //cubeDraw();
+    gameManager.matrices.popMatrix(modelID);
+
+	gameManager.matrices.popMatrix(modelID);
+    gameManager.matrices.popMatrix(modelID);
+    gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 Car.prototype.updateAABBbox = function() {

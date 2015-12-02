@@ -3,29 +3,105 @@
 		<title>Micromachines</title>
 		
 		<script id="shader-vs" type="x-shader/x-vertex">
-		    attribute vec3 aVertexPosition;
-		    attribute vec2 aTextureCoord;
+			#version 100
+		    attribute vec3 VertexNormal;
+			attribute vec4 VertexPosition;
+			attribute vec4 texCoord;
 
-		    uniform mat4 uMVMatrix;
-		    uniform mat4 uPMatrix;
+			attribute vec2 vVertex;
+			attribute vec2 vtexCoord;
 
-		    varying vec2 vTextureCoord;
+		    uniform mat4 m_pvm;
+			uniform mat4 m_viewModel;
+			uniform mat3 m_normal;
+			uniform bool vWritingMode;
+
+			varying vec3 Normal;
+			varying vec4 Position;
+			varying vec3 EyeDirection;
+			varying vec2 tex_coord;
 
 		    void main(void) {
-		        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-		        vTextureCoord = aTextureCoord;
+		        if (!vWritingMode) {
+					Normal = normalize(m_normal * VertexNormal);
+					Position = m_viewModel * VertexPosition;
+					EyeDirection = normalize(vec3(-Position));
+					gl_Position = m_pvm * VertexPosition;
+					tex_coord = texCoord.st;
+				}
+				else {
+					tex_coord = vtexCoord;
+					gl_Position = m_pvm * vec4(vVertex, 0.0, 1.0);
+				}	
 		    }
 		</script>
 
 		<script id="shader-fs" type="x-shader/x-fragment">
 		    precision mediump float;
+			struct MaterialProperties {
+				vec4 diffuse; 				// what part of diffuse light is scattered
+				vec4 ambient; 				// what part of ambient light is reflected
+				vec4 specular; 				// what part of specular light is scattered
+				vec4 emissive; 				// light produced by the material
+				float shininess;			// exponent for sharpening specular reflection
+				int texCount;
+			};
 
-		    varying vec2 vTextureCoord;
+			struct LightProperties {
+				bool isEnabled;				// true to apply this light in this invocation
 
-		    uniform sampler2D uSampler;
+				bool isLocal;				// true for a point light or a spotlight,
+											// false for a positional light
+
+				bool isSpot;				// true if the light is a spotlight
+
+				vec4 ambient;				// light’s contribution to ambient light
+				vec4 diffuse;
+				vec4 specular;
+
+				vec3 position_point;
+				vec4 direction;
+				vec4 position;				// location of light, if is Local is true,
+											// otherwise the direction toward the light
+
+				vec3 halfVector;			// direction of highlights for directional light
+
+				float spotCosCutoff;
+				float spotExponent;
+
+				float constantAttenuation;	// local light attenuation coefficients
+				float linearAttenuation;
+				float quadraticAttenuation;
+			};
+
+			const int Maxlights = 9;
+			uniform MaterialProperties mat;
+			uniform LightProperties lights[Maxlights];
+			uniform bool useTextures;
+			uniform bool useLights;
+			uniform bool writingMode;
+			uniform bool particleMode;
+			uniform int texMode;
+			uniform bool sun;
+			uniform bool flare;
+
+			uniform vec3 overrideColor;
+
+			uniform int fogState;
+			uniform int fogMode;
+			uniform vec3 fogColor;
+			uniform float fogDensity;
+
+			uniform sampler2D texmap1;
+			uniform sampler2D texmap2;
+
+			varying vec3 Normal;
+			varying vec4 Position;
+			varying vec3 EyeDirection;
+			varying vec2 tex_coord;
 
 		    void main(void) {
-		        gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+		        gl_FragColor = texture2D(texmap1, vec2(tex_coord.s, tex_coord.t));
 		    }
 		</script>
 

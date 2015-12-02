@@ -17,15 +17,15 @@ function MatrixStack() {
 MatrixStack.prototype.pushMatrix = function(type) {
 	var clone = mat4.create();
 	if (type == modelID) {
-		mat4.set(modelMatrix, clone);
+		clone = mat4.clone(modelMatrix);
 		this.model.push(clone);
 	}
 	else if (type == viewID) {
-		mat4.set(viewMatrix, clone);
+		clone = mat4.clone(viewMatrix);
 		this.view.push(clone);
 	}
 	else if (type == projectionID) {
-		mat4.set(projectionMatrix, clone);
+		clone = mat4.clone(projectionMatrix);
 		this.projection.push(clone);
 	}
 }
