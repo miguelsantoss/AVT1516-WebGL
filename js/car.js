@@ -8,7 +8,7 @@ function Car(position, direction) {
 	this.acceleration_factor = 0.000035;
 	this.acceleration_input = 0;
 	this.carAngle = 0;
-	this.weel_angle = 0;
+	this.wheel_angle = 0;
 	this.steer_angle = 1; 
 	this.steer_input = 0;
 	this.steer_factor = Math.PI/4;
@@ -81,17 +81,104 @@ Car.prototype.draw = function() {
     //ROOF
     cubeDraw();
     gameManager.matrices.popMatrix(modelID);
-
+	//WINDOWS
     gameManager.matrices.pushMatrix(modelID);
     mat4.translate(modelMatrix, modelMatrix, [0.15, 1.1, 0.15]);
     mat4.rotate(modelMatrix, modelMatrix, -Math.PI/2, [1, 0, 0]);
     mat4.scale(modelMatrix, modelMatrix, [0.7, 0.02, 0.45]);
-    //WINDOWS: nr1 - left
-    gl.bindTexture(gl.TEXTURE_2D, textures[0]);
+    //WINDOW nr1 - left
     cubeDraw();
     gameManager.matrices.popMatrix(modelID);
 
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [0.15, 1.55, 0.85]);
+    mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
+    mat4.scale(modelMatrix, modelMatrix, [0.7, 0.02, 0.45]);
+    //WINDOW nr2 - right
+    cubeDraw();
+    gameManager.matrices.popMatrix(modelID);
+
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [0.15, 1.55, 0.13]);
+    mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [0, 0, 1]);
+    mat4.scale(modelMatrix, modelMatrix, [0.74, 0.02, 0.45]);
+    //WINDOW nr3 - back
+    cubeDraw();
+    gameManager.matrices.popMatrix(modelID);
+
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [0.87, 1.55, 0.13]);
+    mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [0, 0, 1]);
+    mat4.scale(modelMatrix, modelMatrix, [0.74, 0.02, 0.45]);
+    //WINDOW nr4 - front
+    cubeDraw();
+    gameManager.matrices.popMatrix(modelID);
+
+    //CAR_HEADLIGHTS
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [1.0, 0.7, 0.2]);
+    mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [0, 0, 1]);
+    mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+    mat4.scale(modelMatrix, modelMatrix, [0.6, 0.6, 0.6]);
+    //CAR_HEADLIGHT nr1 - front left
+    torusDraw();
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [0.0, 0.0, 3.3]);
+    //CAR_HEADLIGHT nr1 - front right
+    torusDraw();
+    gameManager.matrices.popMatrix(modelID);
+    //CAR_TAILIGHTS
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [0.0, 5.6, 0.0]);
+    //CAR_TAILIGHT nr1 - rear left
+    torusDraw();
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.translate(modelMatrix, modelMatrix, [0.0, 0.0, 3.3]);
+    //CAR_HEADLIGHT nr1 - rear right
+    torusDraw();
+    gameManager.matrices.popMatrix(modelID);
+    gameManager.matrices.popMatrix(modelID);
+    gameManager.matrices.popMatrix(modelID);
+
 	gameManager.matrices.popMatrix(modelID);
+
+	//TIRES
+	gameManager.matrices.pushMatrix(modelID);
+	mat4.translate(modelMatrix, modelMatrix, [0.3, 0.15, -0.1]);
+    mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+	mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
+	//TIRE - rear left
+	torusDraw();
+	gameManager.matrices.popMatrix(modelID);
+
+	gameManager.matrices.pushMatrix(modelID);
+	mat4.translate(modelMatrix, modelMatrix, [1.1, 0.15, -0.1]);
+	mat4.rotate(modelMatrix, modelMatrix, degToRad(this.wheel_angle), [0, 1, 0]);
+    mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+	mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
+	//TIRE - front left
+	torusDraw();
+	gameManager.matrices.popMatrix(modelID);
+
+	gameManager.matrices.pushMatrix(modelID);
+	mat4.translate(modelMatrix, modelMatrix, [0.3, 0.15, 1.1]);
+    mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+	mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
+	//TIRE - rear right
+	torusDraw();
+	gameManager.matrices.popMatrix(modelID);
+
+	gameManager.matrices.pushMatrix(modelID);
+	mat4.translate(modelMatrix, modelMatrix, [1.1, 0.15, 1.1]);
+	mat4.rotate(modelMatrix, modelMatrix, degToRad(this.wheel_angle), [0, 1, 0]);
+    mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+	mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
+	//TIRE - front right
+	torusDraw();
+	gameManager.matrices.popMatrix(modelID);
+
     gameManager.matrices.popMatrix(modelID);
     gl.bindTexture(gl.TEXTURE_2D, null);
 }

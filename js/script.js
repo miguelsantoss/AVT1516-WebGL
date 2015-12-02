@@ -290,15 +290,15 @@ function handleKeys() {
 
     if (currentlyPressedKeys[79] || currentlyPressedKeys[37]) { //O or left arrow
         gameManager.car.steer_input =  -3;
-        gameManager.car.weel_angle  =  25;
+        gameManager.car.wheel_angle  =  25;
     } 
     else if (currentlyPressedKeys[80] || currentlyPressedKeys[39]) { //P or right arrow
         gameManager.car.steer_input =   3;
-        gameManager.car.weel_angle  = -25;
+        gameManager.car.wheel_angle  = -25;
     }
     else {
         gameManager.car.steer_input =   0;
-        gameManager.car.weel_angle  =   0;
+        gameManager.car.wheel_angle  =   0;
     }
 
     if (currentlyPressedKeys[49]) {
