@@ -64,3 +64,52 @@ function normalize(vec) {
 	var length = vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
 	return [vec[0] / length, vec[1] / length, vec[2] / length];
 }
+
+function multMatrixPoint(matrix, point, res) {
+	for (var i = 0; i < 4; ++i) {
+
+		res[i] = 0.0;
+	
+		for (var j = 0; j < 4; j++) {
+		
+			res[i] += point[j] * matrix[j*4 + i];
+		} 
+	}
+
+}
+
+function computeNormal3x3() {
+	var mMat3x3 = mat3.create();
+	
+	mMat3x3[0] = modelViewMatrix[0];
+	mMat3x3[1] = modelViewMatrix[1];
+	mMat3x3[2] = modelViewMatrix[2];
+
+	mMat3x3[3] = modelViewMatrix[4];
+	mMat3x3[4] = modelViewMatrix[5];
+	mMat3x3[5] = modelViewMatrix[6];
+
+	mMat3x3[6] = modelViewMatrix[8];
+	mMat3x3[7] = modelViewMatrix[9];
+	mMat3x3[8] = modelViewMatrix[10];
+
+	var det = mMat3x3[0] * (mMat3x3[4] * mMat3x3[8] - mMat3x3[5] * mMat3x3[7]) +
+			  mMat3x3[1] * (mMat3x3[5] * mMat3x3[6] - mMat3x3[8] * mMat3x3[3]) +
+		  	  mMat3x3[2] * (mMat3x3[3] * mMat3x3[7] - mMat3x3[4] * mMat3x3[6]);
+
+	var invDet = 1.0 / det;
+
+	var mNormal3x3 = mat3.create();
+
+	mNormal3x3[0] = (mMat3x3[4] * mMat3x3[8] - mMat3x3[5] * mMat3x3[7]) * invDet;
+	mNormal3x3[1] = (mMat3x3[5] * mMat3x3[6] - mMat3x3[8] * mMat3x3[3]) * invDet;
+	mNormal3x3[2] = (mMat3x3[3] * mMat3x3[7] - mMat3x3[4] * mMat3x3[6]) * invDet;
+	mNormal3x3[3] = (mMat3x3[2] * mMat3x3[7] - mMat3x3[1] * mMat3x3[8]) * invDet;
+	mNormal3x3[4] = (mMat3x3[0] * mMat3x3[8] - mMat3x3[2] * mMat3x3[6]) * invDet;
+	mNormal3x3[5] = (mMat3x3[1] * mMat3x3[6] - mMat3x3[7] * mMat3x3[0]) * invDet;
+	mNormal3x3[6] = (mMat3x3[1] * mMat3x3[5] - mMat3x3[4] * mMat3x3[2]) * invDet;
+	mNormal3x3[7] = (mMat3x3[2] * mMat3x3[3] - mMat3x3[0] * mMat3x3[5]) * invDet;
+	mNormal3x3[8] = (mMat3x3[0] * mMat3x3[4] - mMat3x3[3] * mMat3x3[1]) * invDet;
+
+	return mNormal3x3;
+}

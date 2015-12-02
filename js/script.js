@@ -94,7 +94,7 @@ function initBuffers() {
 
             textureCoordData.push(u);
             textureCoordData.push(v);
-            textureCoordData.push(1.0);
+            textureCoordData.push(0.0);
             textureCoordData.push(1.0);
 
             vertexPositionData.push(radius * x);
@@ -215,7 +215,8 @@ function createTextures(images) {
 function setMatrixUniforms() {
 	computeMatrices();
     gl.uniformMatrix4fv(shaderProgram.pvm_uniformId, false, projModelViewMatrix);
-    gl.uniformMatrix4fv(shaderProgram.vm_uniformId, false, modelViewMatrix);
+    gl.uniformMatrix4fv(shaderProgram.vm_uniformId,  false, modelViewMatrix);
+    gl.uniformMatrix3fv(shaderProgram.normal_uniformId, false, computeNormal3x3());
 }
 
 function drawScene() {
@@ -301,16 +302,35 @@ function handleKeys() {
         gameManager.car.wheel_angle  =   0;
     }
 
-    if (currentlyPressedKeys[49]) {
+    if (currentlyPressedKeys[49]) {//1
         gameManager.activeCamera = 0;
     }
-    else if (currentlyPressedKeys[50]) {
+    else if (currentlyPressedKeys[50]) {//2
         gameManager.activeCamera = 1;
     }
-    else if (currentlyPressedKeys[51]) {
+    else if (currentlyPressedKeys[51]) {//3
 
     }
-    else if (currentlyPressedKeys[52]) {
+    else if (currentlyPressedKeys[52]) {//4
 
+    }
+
+    if (currentlyPressedKeys[78]) {//N
+        gameManager.lights.directional[0].isEnabled = !gameManager.lights.directional[0].isEnabled;
+        currentlyPressedKeys[78] = false;
+    }
+    if (currentlyPressedKeys[67]) {//C
+        gameManager.lights.pointLights[0].isEnabled = !gameManager.lights.pointLights[0].isEnabled;
+        gameManager.lights.pointLights[1].isEnabled = !gameManager.lights.pointLights[1].isEnabled;
+        gameManager.lights.pointLights[2].isEnabled = !gameManager.lights.pointLights[2].isEnabled;
+        gameManager.lights.pointLights[3].isEnabled = !gameManager.lights.pointLights[3].isEnabled;
+        gameManager.lights.pointLights[4].isEnabled = !gameManager.lights.pointLights[4].isEnabled;
+        gameManager.lights.pointLights[5].isEnabled = !gameManager.lights.pointLights[5].isEnabled;
+        currentlyPressedKeys[67] = false;
+    }
+    if (currentlyPressedKeys[72]) {//H
+        gameManager.lights.spotLights[0].isEnabled = !gameManager.lights.spotLights[0].isEnabled;
+        gameManager.lights.spotLights[1].isEnabled = !gameManager.lights.spotLights[1].isEnabled;
+        currentlyPressedKeys[72] = false;
     }
 }

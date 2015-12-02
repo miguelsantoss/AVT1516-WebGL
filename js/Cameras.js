@@ -35,7 +35,7 @@ PerspectiveCamera.prototype.computeProjection = function() {
 }
 
 PerspectiveCamera.prototype.updateLookAt = function(position, direction) {
-	this.position = position.slice();
+	this.position  = position.slice();
 	this.direction = direction.slice();
 }
 
