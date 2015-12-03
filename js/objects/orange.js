@@ -43,7 +43,7 @@ Orange.prototype.draw = function() {
 
 	gameManager.matrices.pushMatrix(modelID);
     mat4.translate(modelMatrix, modelMatrix, this.position);
-    mat4.scale(modelMatrix, modelMatrix, [0.5, 0.5, 0.5]);
+    mat4.scale(modelMatrix, modelMatrix, [0.4, 0.4, 0.4]);
     mat4.rotate(modelMatrix, modelMatrix, degToRad(angle), rotationAxis);
 
     gl.bindTexture(gl.TEXTURE_2D, textures[1]);

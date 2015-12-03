@@ -9,7 +9,7 @@ function Car(position, direction) {
 	this.acceleration_input = 0;
 	this.carAngle = 0;
 	this.wheel_angle = 0;
-	this.steer_angle = 1; 
+	this.steer_angle = 0; 
 	this.steer_input = 0;
 	this.steer_factor = Math.PI/4;
 	this.current_speed = 0;
@@ -61,7 +61,7 @@ function Car(position, direction) {
 
 	this.AABBbox = {};
 	this.AABBbox.offSetX = 0.6;
-	this.AABBbox.offSetZ = 0.4;
+	this.AABBbox.offSetZ = 0.5;
 	this.updateAABBbox();
 }
 
@@ -269,9 +269,25 @@ Car.prototype.updateAABBbox = function() {
 									[this.position[0], this.position[2]],
 									this.steer_angle);
 
-	this.AABBbox.Xmax = rotated1[0];
-	this.AABBbox.Xmin = rotated2[0];
+	this.AABBbox.XMax = rotated1[0];
+	this.AABBbox.XMin = rotated2[0];
 
-	this.AABBbox.Zmax = rotated1[1];
-	this.AABBbox.Zmin = rotated2[1];
+	this.AABBbox.ZMax = rotated1[1];
+	this.AABBbox.ZMin = rotated2[1];
+}
+
+Car.prototype.checkInside = function(obj) {
+    if (this.position[0] > obj.XMax || this.position[0] < obj.XMin || this.position[2] > obj.ZMax || this.position[2] < obj.ZMin)
+        return false;
+    return true;
+}
+
+Car.prototype.checkCollision = function(obj) {
+    return ((this.AABBbox.XMax > obj.AABBbox.XMin) && (this.AABBbox.XMin < obj.AABBbox.XMax) && (this.AABBbox.ZMax > obj.AABBbox.ZMin) && (this.AABBbox.ZMin < obj.AABBbox.ZMax));
+}
+
+Car.prototype.dealColision = function() {
+    this.acceleration = 0;
+    this.speed = 0;
+    this.position = [this.lastPosition[0], this.lastPosition[1], this.lastPosition[2]];
 }

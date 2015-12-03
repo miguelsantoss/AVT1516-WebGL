@@ -232,7 +232,7 @@ function animate() {
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
         var elapsed = timeNow - lastTime;
-        gameManager.updateObjs(elapsed);
+            gameManager.update(elapsed);
         }
     lastTime = timeNow;
 }
@@ -332,5 +332,13 @@ function handleKeys() {
         gameManager.lights.spotLights[0].isEnabled = !gameManager.lights.spotLights[0].isEnabled;
         gameManager.lights.spotLights[1].isEnabled = !gameManager.lights.spotLights[1].isEnabled;
         currentlyPressedKeys[72] = false;
+    }
+    if (currentlyPressedKeys[83]) {//S
+        gameManager.pause = !gameManager.pause;
+        currentlyPressedKeys[83] = false;
+    }
+    if (currentlyPressedKeys[82]) {//S
+        if (gameManager.lives <= 0)
+            gameManager.restartGame();
     }
 }

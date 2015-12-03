@@ -1,6 +1,9 @@
 function GameManager(width, height) {
 	this.width = width;
 	this.height = height;
+    this.lives = 5;
+    this.gameOver = false;
+    this.pause = false;
 
     this.createCameras();
     this.createObjects();
@@ -62,18 +65,44 @@ GameManager.prototype.draw = function() {
     }
 }
 
-GameManager.prototype.updateObjs = function(delta_t) {
-	this.car.update(delta_t);
+GameManager.prototype.update = function(delta_t) {
+    if (this.pause || this.gameOver) return;
+    this.car.update(delta_t);
     this.updateHeadLights();
-	for(var i = 0; i < this.oranges.length; i++) {
-		this.oranges[i].update(delta_t);
-	}
+    if (!this.car.checkInside(this.world)) {
+        this.lives--;
+        if (this.lives <= 0)
+            this.gameOver = true;
+        else
+            this.restartCar();
+    }
+
     for(var i = 0; i < this.oranges.length; i++) {
+        if (this.car.checkCollision(this.oranges[i])) {
+            this.lives--;
+            if (this.lives <= 0)
+                this.gameOver = true;
+            else
+                this.restartCar();
+        }
+        this.oranges[i].update(delta_t);
+    }
+    for(var i = 0; i < this.butters.length; i++) {
+        if (this.car.checkCollision(this.butters[i])) {
+            this.butters[i].dealColision(this.car);
+            this.car.dealColision();
+        }
         this.butters[i].update(delta_t);
     }
-    for(var i = 0; i < this.oranges.length; i++) {
+    for(var i = 0; i < this.cheerios.length; i++) {
+        if (this.car.checkCollision(this.cheerios[i])) {
+            this.cheerios[i].dealColision(this.car);
+            this.car.dealColision();
+        }
         this.cheerios[i].update(delta_t);
     }
+    
+
 }
 
 GameManager.prototype.loadWorld = function() {
@@ -110,6 +139,11 @@ GameManager.prototype.loadWorld = function() {
     this.world.material.emissive   = [0.00, 0.00, 0.00, 1.00];
     this.world.material.shininess  = 100.0;
     this.world.material.texCount   = 0;
+
+    this.world.XMin = 0.00;
+    this.world.XMax = 60.0;
+    this.world.ZMin = 0.00;
+    this.world.ZMax = 60.0;
 
     this.world.VertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.world.VertexPositionBuffer);
@@ -246,7 +280,6 @@ GameManager.prototype.createLights = function() {
 
     this.lights.spotLights.push(new SpotLight(headLightLEFT,  headLightDirection, headLightAmbientComp, headLightDiffuseComp, headLightSpecularComp, headLightConstantAttenuation, headLightLinearAttenuation, headLightQuadraticAttenuation, headLightCutOff, headLightExponent, ON));
     this.lights.spotLights.push(new SpotLight(headLightRIGHT, headLightDirection, headLightAmbientComp, headLightDiffuseComp, headLightSpecularComp, headLightConstantAttenuation, headLightLinearAttenuation, headLightQuadraticAttenuation, headLightCutOff, headLightExponent, ON));
-    console.log(this.lights);
 }
 
 GameManager.prototype.setUpLightsUniforms = function() {
@@ -376,8 +409,6 @@ GameManager.prototype.updateHeadLights = function() {
     var carDirection = this.car.direction.slice();
     var angle        = this.car.carAngle;
 
-    console.log(angle);
-
     var newXleft  = 0.55 * Math.cos(angle * Math.PI / 180.0) + Math.sin(angle * Math.PI / 180.0) * (-0.15) + carPosition[0];
     var newZleft  = -Math.sin(angle * Math.PI / 180.0) * 0.55 + Math.cos(angle * Math.PI / 180.0) * (-0.15) + carPosition[2];
 
@@ -388,4 +419,37 @@ GameManager.prototype.updateHeadLights = function() {
     this.lights.spotLights[0].direction = [carDirection[0], carDirection[1], carDirection[2], 0.0];
     this.lights.spotLights[1].position  = [newXright, carPosition[1], newZright, 1.0];
     this.lights.spotLights[1].direction = [carDirection[0], carDirection[1], carDirection[2], 0.0];
+}
+
+GameManager.prototype.restartGame = function() {
+    this.gameOver = false;
+    this.lives = 5;
+    this.restartCar();
+    this.lights.directional[0].isEnabled = ON;
+    this.lights.pointLights[0].isEnabled = OFF;
+    this.lights.pointLights[1].isEnabled = OFF;
+    this.lights.pointLights[2].isEnabled = OFF;
+    this.lights.pointLights[3].isEnabled = OFF;
+    this.lights.pointLights[4].isEnabled = OFF;
+    this.lights.pointLights[5].isEnabled = OFF;
+    this.lights.spotLights[0].isEnabled  = ON;
+    this.lights.spotLights[1].isEnabled  = ON;
+}
+
+GameManager.prototype.restartCar = function () {
+    this.car.position = [28.7, 1.15, 6.1];
+    this.car.direction = [1.0, 0.0, 0.0];
+
+    this.car.acceleration = 0;
+    this.car.speed = 0;
+    this.car.speedVec3 = [0, 0, 0];
+    this.acceleration_input = 0;
+    this.car.carAngle = 0;
+    this.car.wheel_angle = 0;
+    this.car.steer_angle = 0; 
+    this.car.steer_input = 0;
+    this.car.current_speed = 0;
+    this.car.backwards_friction_factor = 0.004;
+    this.car.backwards_friction = 0;
+    this.car.lastPosition = this.car.position.slice();
 }
