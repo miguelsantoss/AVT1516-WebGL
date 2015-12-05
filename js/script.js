@@ -4,13 +4,31 @@ var cube = {}, torus = {}, quad = {}, sphere = {};
 function initGL(canvas) {
     try {
         gl = canvas.getContext("experimental-webgl");
-        gl.viewportWidth = canvas.width;
+        gl.viewportWidth  = canvas.width;
         gl.viewportHeight = canvas.height;
     } catch (e) {
     }
     if (!gl) {
         alert("Could not initialise WebGL, sorry :-(");
     }
+}
+
+function resize(canvas) {
+  // Lookup the size the browser is displaying the canvas.
+  var displayWidth  = canvas.clientWidth;
+  var displayHeight = canvas.clientHeight;
+ 
+  // Check if the canvas is not the same size.
+  if (canvas.width  != displayWidth ||
+      canvas.height != displayHeight) {
+ 
+    // Make the canvas the same size
+    canvas.width  = displayWidth;
+    canvas.height = displayHeight;
+    
+    gl.viewportWidth  = canvas.width;
+    gl.viewportHeight = canvas.height;
+  }
 }
 
 function initBuffers() {
@@ -254,8 +272,9 @@ function tick() {
 function webGLStart() {
     var canvas = document.getElementById("micromachines-canvas");
     initGL(canvas);
+    resize(canvas);
   	gameManager = new GameManager(gl.viewportWidth, gl.viewportHeight);
-    loadImages(["resources/tiled.gif", "resources/lightwood.gif", "resources/glass.gif", "resources/tire.gif", "resources/tree2.gif"], createTextures);
+    loadImages(["resources/tiled.gif", "resources/lightwood.gif", "resources/glass.gif", "resources/tire.gif", "resources/tree.gif"], createTextures);
     initBuffers();
     initShaders();
 
