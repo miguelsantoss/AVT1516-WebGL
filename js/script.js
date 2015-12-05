@@ -198,7 +198,7 @@ function loadImage(url, callback) {
 function loadImages(urls, callback) {
   var images = [];
   var imagesToLoad = urls.length;
- 
+
   // Called each time an image finished
   // loading.
   var onImageLoad = function() {
@@ -208,7 +208,7 @@ function loadImages(urls, callback) {
       callback(images);
     }
   };
- 
+
   for (var i = 0; i < imagesToLoad; ++i) {
     var image = loadImage(urls[i], onImageLoad);
     images.push(image);
@@ -301,7 +301,7 @@ function handleKeyUp(event) {
 function handleKeys() {
     if (currentlyPressedKeys[81] || currentlyPressedKeys[38]) { //Q or up arrow
         gameManager.car.acceleration_input =  1;
-    } 
+    }
     else if (currentlyPressedKeys[65] || currentlyPressedKeys[40]) { //A or down arrow
         gameManager.car.acceleration_input = -1;
     }
@@ -313,7 +313,7 @@ function handleKeys() {
     if (currentlyPressedKeys[79] || currentlyPressedKeys[37]) { //O or left arrow
         gameManager.car.steer_input =  -3;
         gameManager.car.wheel_angle  =  25;
-    } 
+    }
     else if (currentlyPressedKeys[80] || currentlyPressedKeys[39]) { //P or right arrow
         gameManager.car.steer_input =   3;
         gameManager.car.wheel_angle  = -25;
