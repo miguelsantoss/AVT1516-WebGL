@@ -1,19 +1,26 @@
 function GameManager(width, height) {
-	this.width = width;
-	this.height = height;
-    this.lives = 5;
-    this.gameOver = false;
-    this.pause = false;
+	this.width          = width;
+	this.height         = height;
+    this.lives          = 5;
+    this.gameOver       = false;
+    this.pause          = false;
+
+    this.fog            = {};
+    this.fog.dayColor   = [0.46, 0.82, 0.97, 1.00];
+    this.fog.nightColor = [0.00, 0.06, 0.16, 1.00];
+    this.fog.color      = [];
+    this.fog.state      = false;
+    this.fog.density    = 0.077;
+    this.fog.mode       = 1;
+    this.day            = true;
+    
 
     this.createCameras();
     this.createObjects();
     this.createLights();
 
-	this.world = {};
-	this.world.vertexPositionBuffer = null;
-	this.world.vertexTextureCoordBuffer = null;
-
 	this.matrices = new MatrixStack();
+    // gl.depthFunc(gl.LESS);
 }
 
 GameManager.prototype.activeCameraProj = function() {
@@ -36,6 +43,8 @@ GameManager.prototype.draw = function() {
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+    this.setUpFog();
+
     mat4.identity(modelMatrix);
     mat4.identity(viewMatrix);
     mat4.identity(projectionMatrix);
@@ -45,15 +54,14 @@ GameManager.prototype.draw = function() {
     gameManager.setUpLightsUniforms();
 
     gl.uniform1i(shaderProgram.particleMode, 0);
-    gl.uniform1i(shaderProgram.fogState, 0);
-    gl.uniform1i(shaderProgram.texMode, 2);
+    gl.uniform1i(shaderProgram.texMode, 1);
     gl.uniform1i(shaderProgram.tex_loc_1, 0);
     gl.uniform1i(shaderProgram.texUse, 1);
     gl.uniform3fv(shaderProgram.uniColor, [1.0, 1.0, 1.0]);
     
 
 	this.drawWorld();
-	this.car.draw();
+	
 	for(var i = 0; i < this.oranges.length; i++) {
 		this.oranges[i].draw();
 	}
@@ -63,6 +71,10 @@ GameManager.prototype.draw = function() {
     for(var i = 0; i < this.butters.length; i++) {
         this.cheerios[i].draw();
     }
+    for(var i = 0; i < this.trees.length; i++) {
+        this.trees[i].draw();
+    }
+    this.car.draw();
 }
 
 GameManager.prototype.update = function(delta_t) {
@@ -86,6 +98,9 @@ GameManager.prototype.update = function(delta_t) {
                 this.restartCar();
         }
         this.oranges[i].update(delta_t);
+        if (!this.oranges[i].checkInside(this.world)) {
+            this.oranges[i].resetOrangeInside(this.world);
+        }
     }
     for(var i = 0; i < this.butters.length; i++) {
         if (this.car.checkCollision(this.butters[i])) {
@@ -106,6 +121,9 @@ GameManager.prototype.update = function(delta_t) {
 }
 
 GameManager.prototype.loadWorld = function() {
+    this.world = {};
+    this.world.vertexPositionBuffer = null;
+    this.world.vertexTextureCoordBuffer = null;
     var worldVertices = [
         -0.5, -0.5, 0.0, 1.0,
          0.5, -0.5, 0.0, 1.0,
@@ -177,9 +195,13 @@ GameManager.prototype.drawWorld = function() {
     mat4.scale(modelMatrix, modelMatrix, [60, 60, 60]);
     mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
 
-	gl.activeTexture(gl.TEXTURE0);
+    gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textures[0]);
-    gl.uniform1i(shaderProgram.samplerUniform, 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, textures[1]);
+    gl.uniform1i(shaderProgram.texmap1, 0);
+    gl.uniform1i(shaderProgram.texmap2, 1);
+    gl.uniform1i(shaderProgram.texMode, 2);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.world.VertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.world.VertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -201,10 +223,15 @@ GameManager.prototype.drawWorld = function() {
     gl.drawElements(gl.TRIANGLES, this.world.VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
     gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.uniform1i(shaderProgram.texMode, 1);
+
     gameManager.matrices.popMatrix(modelID);
 }
 
 GameManager.prototype.createObjects = function() {
+    this.loadWorld();
     this.car = new Car([28.7, 1.15, 6.1], [1.0, 0.0, 0.0]);
     this.oranges = [];
     this.createOranges();
@@ -212,6 +239,8 @@ GameManager.prototype.createObjects = function() {
     this.createButters();
     this.cheerios = [];
     this.createCheerios();
+    this.trees = [];
+    this.createTreeBillboards();
 }
 
 GameManager.prototype.createCameras = function() {
@@ -222,9 +251,14 @@ GameManager.prototype.createCameras = function() {
 }
 
 GameManager.prototype.createOranges = function() {
-	this.oranges.push(new Orange([30.7, 2.0, 6.1], [1.0, 0.0, 0.0], [0.0006, 0.0, 0.0]));
-	this.oranges.push(new Orange([30.7, 2.0, 6.1], [1.0, 0.0, 1.0], [0.0006, 0.0, 0.0006]));
-	this.oranges.push(new Orange([30.7, 2.0, 6.1], [0.0, 0.0, 1.0], [0.0, 0.0, 0.0006]));
+	this.oranges.push(new Orange([50.7, 2.0, 6.1], [1.0, 0.0, 0.0], [0.00125, 0.0, 0.0]));
+	this.oranges.push(new Orange([30.7, 2.0, 6.1], [1.0, 0.0, 1.0], [0.00125, 0.0, 0.00125]));
+	this.oranges.push(new Orange([30.7, 2.0, 6.1], [0.0, 0.0, 1.0], [0.0, 0.0, 0.00125]));
+    this.oranges.push(new Orange(this.world));
+    this.oranges.push(new Orange(this.world));
+    this.oranges.push(new Orange(this.world));
+    this.oranges.push(new Orange(this.world));
+    this.oranges.push(new Orange(this.world));
 }
 
 GameManager.prototype.createButters = function() {
@@ -237,6 +271,10 @@ GameManager.prototype.createCheerios = function() {
     this.cheerios.push(new Cheerio([29.0, 1.1, 4.0]));
     this.cheerios.push(new Cheerio([29.5, 1.1, 4.0]));
     this.cheerios.push(new Cheerio([30.0, 1.1, 4.0]));
+}
+
+GameManager.prototype.createTreeBillboards = function() {
+    this.trees.push(new TreeBillboard([35, 2.5, 6.1], textures[1]));
 }
 
 GameManager.prototype.createLights = function() {
@@ -434,6 +472,9 @@ GameManager.prototype.restartGame = function() {
     this.lights.pointLights[5].isEnabled = OFF;
     this.lights.spotLights[0].isEnabled  = ON;
     this.lights.spotLights[1].isEnabled  = ON;
+    for(var i = 0; i < this.oranges.length; i++) {
+        this.oranges[i].generateRandomOrange(this.world);
+    }
 }
 
 GameManager.prototype.restartCar = function () {
@@ -452,4 +493,20 @@ GameManager.prototype.restartCar = function () {
     this.car.backwards_friction_factor = 0.004;
     this.car.backwards_friction = 0;
     this.car.lastPosition = this.car.position.slice();
+    for(var i = 0; i < this.oranges.length; i++) {
+        this.oranges[i].generateRandomOrange(this.world);
+    }
+}
+
+GameManager.prototype.setUpFog = function() {
+    if(this.day)
+        this.fog.color = this.fog.dayColor;
+    else
+        this.fog.color = this.fog.nightColor;
+    gl.clearColor(this.fog.color[0], this.fog.color[1], this.fog.color[2], this.fog.color[3]);
+    
+    gl.uniform1i(shaderProgram.fogIsEnabled, this.fog.state);
+    gl.uniform1f(shaderProgram.fogDensity,   this.fog.density);
+    gl.uniform1i(shaderProgram.fogMode,      this.fog.mode);
+    gl.uniform3fv(shaderProgram.fogColor,    [this.fog.color[0], this.fog.color[1], this.fog.color[2]]);
 }

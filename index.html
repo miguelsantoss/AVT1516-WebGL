@@ -87,7 +87,7 @@
 
 			uniform vec3 overrideColor;
 
-			uniform int fogState;
+			uniform bool fogIsEnabled;
 			uniform int fogMode;
 			uniform vec3 fogColor;
 			uniform float fogDensity;
@@ -100,22 +100,6 @@
 			varying vec3 EyeDirection;
 			varying vec2 tex_coord;
 
-			vec3 colorFogFunction(vec3 frag_rgb_in, vec3 pos) {
-				float dist = length(pos);
-				float fogAmount = 0.0;
-				if (fogMode == 0) {
-					fogAmount = (15.0 - dist)/(15.0 - 7.5);
-				}
-				else if (fogMode == 1) {
-					fogAmount = 1.0 / exp(dist * fogDensity);
-				}
-				else if (fogMode == 2) {
-					fogAmount = 1.0 / exp((dist * fogDensity) * (dist * fogDensity));
-				}
-				fogAmount = clamp(fogAmount, 0.0, 1.0);
-				return mix(fogColor, frag_rgb_in, fogAmount);
-			}
-
 		    void main(void) {
 		    	if (!particleMode) {
 					if (!writingMode) {
@@ -126,10 +110,10 @@
 						texel1 = texture2D(texmap2, tex_coord);
 						vec4 tex = vec4(1.0);
 						if (useTextures) {
-							if (texMode == 1) {
+							if (texMode == 2) {
 								tex = texel * texel1;
 							}
-							else if (texMode == 2) {
+							else if (texMode == 1) {
 								tex = texel;
 							}
 						}
@@ -187,8 +171,20 @@
 
 						}
 						vec3 frag_rgb = overrideColor * min((mat.emissive.rgb + scatteredLight + reflectedLight)*tex.rgb, vec3(1.0));
-						if (fogState == 1) {
-							frag_rgb = colorFogFunction(frag_rgb, Position.xyz);
+						if (fogIsEnabled) {
+							float dist = length(Position.xyz);
+							float fogAmount = 0.0;
+							if (fogMode == 0) {
+								fogAmount = (15.0 - dist)/(15.0 - 7.5);
+							}
+							else if (fogMode == 1) {
+								fogAmount = 1.0 / exp(dist * fogDensity);
+							}
+							else if (fogMode == 2) {
+								fogAmount = 1.0 / exp((dist * fogDensity) * (dist * fogDensity));
+							}
+							fogAmount = clamp(fogAmount, 0.0, 1.0);
+							frag_rgb =  mix(fogColor, frag_rgb, fogAmount);
 						}
 						gl_FragColor = vec4(frag_rgb, mat.diffuse.a*tex.a);
 
@@ -242,6 +238,7 @@
 		<script type="text/javascript" src="js/objects/butter.js"></script>
 		<script type="text/javascript" src="js/objects/cheerio.js"></script>
 		<script type="text/javascript" src="js/objects/orange.js"></script>
+		<script type="text/javascript" src="js/objects/billboards.js"></script>
 		<script type="text/javascript" src="js/script.js"></script>
 		<style type="text/css">
 		    #loadingtext {

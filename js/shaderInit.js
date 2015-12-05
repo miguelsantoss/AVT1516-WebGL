@@ -63,14 +63,14 @@ function initShaders() {
     shaderProgram.pvm_uniformId = gl.getUniformLocation(shaderProgram, "m_pvm");
     shaderProgram.vm_uniformId = gl.getUniformLocation(shaderProgram, "m_viewModel");
     shaderProgram.normal_uniformId = gl.getUniformLocation(shaderProgram, "m_normal");
-    shaderProgram.tex_loc_1 = gl.getUniformLocation(shaderProgram, "texmap1");
-    shaderProgram.tex_loc_2 = gl.getUniformLocation(shaderProgram, "texmap2");
+    shaderProgram.texmap1 = gl.getUniformLocation(shaderProgram, "texmap1");
+    shaderProgram.texmap2 = gl.getUniformLocation(shaderProgram, "texmap2");
     shaderProgram.texUse = gl.getUniformLocation(shaderProgram, "useTextures");
     shaderProgram.useLights = gl.getUniformLocation(shaderProgram, "useLights");
     shaderProgram.writeMode = gl.getUniformLocation(shaderProgram, "writingMode");
     shaderProgram.vWriteMode = gl.getUniformLocation(shaderProgram, "vWritingMode");
     shaderProgram.texMode = gl.getUniformLocation(shaderProgram, "texMode");
-    shaderProgram.fogState = gl.getUniformLocation(shaderProgram, "fogState");
+    shaderProgram.fogIsEnabled = gl.getUniformLocation(shaderProgram, "fogIsEnabled");
     shaderProgram.fogMode = gl.getUniformLocation(shaderProgram, "fogMode");
     shaderProgram.fogColor = gl.getUniformLocation(shaderProgram, "fogColor");
     shaderProgram.fogDensity = gl.getUniformLocation(shaderProgram, "fogDensity");

@@ -37,6 +37,7 @@ Butter.prototype.draw = function() {
     mat4.translate(modelMatrix, modelMatrix, [-0.65, 0.0, -0.35]);
     mat4.scale(modelMatrix, modelMatrix, [1.3, 0.5, 0.7]);
 
+    gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textures[1]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
@@ -47,6 +48,7 @@ Butter.prototype.draw = function() {
     gl.uniform4fv(gl.getUniformLocation(shaderProgram, "mat.emissive"), this.material.emissive);
     gl.uniform1f(gl.getUniformLocation(shaderProgram, "mat.shininess"), this.material.shininess);
     cubeDraw();
+    
     gl.bindTexture(gl.TEXTURE_2D, null);
 
     gameManager.matrices.popMatrix(modelID);

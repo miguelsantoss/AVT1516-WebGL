@@ -37,6 +37,7 @@ Cheerio.prototype.draw = function() {
     mat4.translate(modelMatrix, modelMatrix, [-0.125, 0.0, -0.125]);
     mat4.scale(modelMatrix, modelMatrix, [0.25, 0.25, 0.25]);
 
+    gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textures[1]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 

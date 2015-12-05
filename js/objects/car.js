@@ -17,6 +17,8 @@ function Car(position, direction) {
 	this.backwards_friction_factor = 0.004;
 	this.backwards_friction = 0;
 	this.lastPosition = position.slice();
+    this.distanceDone = 0;
+    this.rotatingTiresAngle = 0;
 
 	this.material = {};
 	this.material.body = {};
@@ -36,10 +38,10 @@ function Car(position, direction) {
     this.material.wheel.texCount          = 0;
 
     this.material.windows = {};
-    this.material.windows.ambient         = [0.26, 0.25, 1.00, 1.0];
-    this.material.windows.diffuse         = [0.52, 1.00, 1.00, 1.0];
-    this.material.windows.specular        = [1.00, 1.00, 1.00, 1.0];
-    this.material.windows.emissive        = [0.00, 0.00, 0.00, 1.0];
+    this.material.windows.ambient         = [0.26, 0.25, 1.00, 0.3];
+    this.material.windows.diffuse         = [0.52, 1.00, 1.00, 0.3];
+    this.material.windows.specular        = [1.00, 1.00, 1.00, 0.3];
+    this.material.windows.emissive        = [0.00, 0.00, 0.00, 0.3];
     this.material.windows.shininess       = 128.0;
     this.material.windows.texCount        = 0;
 
@@ -104,11 +106,14 @@ Car.prototype.update = function(delta_t) {
 	this.position = [this.position[0] + delta_t * this.speedVec3[0],
 					 this.position[1] + delta_t * this.speedVec3[1],
 					 this.position[2] + delta_t * this.speedVec3[2]];
-
+    this.distanceDone = Math.abs(this.speedVec3[0]) * delta_t + Math.abs(this.speedVec3[1]) * delta_t + Math.abs(this.speedVec3[2]) * delta_t;
 	this.updateAABBbox();
 }
 
 Car.prototype.draw = function() {
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
 	gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textures[1]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
@@ -136,6 +141,7 @@ Car.prototype.draw = function() {
     //no materials, using the same provided before
     cubeDraw();
     gameManager.matrices.popMatrix(modelID);
+    gl.bindTexture(gl.TEXTURE_2D, textures[2]);
 	//WINDOWS
 	//all windows use the same type of material
 	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "mat.ambient"), this.material.windows.ambient);
@@ -177,7 +183,7 @@ Car.prototype.draw = function() {
     //WINDOW nr4 - front
     cubeDraw();
     gameManager.matrices.popMatrix(modelID);
-
+    gl.bindTexture(gl.TEXTURE_2D, textures[1]);
     //CAR_HEADLIGHTS
     gl.uniform4fv(gl.getUniformLocation(shaderProgram, "mat.ambient"), this.material.car_headlight.ambient);
     gl.uniform4fv(gl.getUniformLocation(shaderProgram, "mat.diffuse"), this.material.car_headlight.diffuse);
@@ -217,6 +223,18 @@ Car.prototype.draw = function() {
 	gameManager.matrices.popMatrix(modelID);
 
 	//TIRES
+    var circumference = 2 * Math.PI * 1;
+    var angle = this.rotatingTiresAngle;
+    angle += this.distanceDone / circumference * 360;
+    if (angle >= 360) angle -= 360;
+    else if (angle <= -360) angle += 360;
+    this.distanceDone = 0;
+    if (angle != 0)
+        this.rotatingTiresAngle = angle;
+    var norm = normalize(this.speedVec3);
+    var rotationAxis = [norm[2], 0, -norm[0]];
+
+    gl.bindTexture(gl.TEXTURE_2D, textures[3]);
 	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "mat.ambient"), this.material.wheel.ambient);
     gl.uniform4fv(gl.getUniformLocation(shaderProgram, "mat.diffuse"), this.material.wheel.diffuse);
     gl.uniform4fv(gl.getUniformLocation(shaderProgram, "mat.specular"), this.material.wheel.specular);
@@ -225,15 +243,24 @@ Car.prototype.draw = function() {
 	gameManager.matrices.pushMatrix(modelID);
 	mat4.translate(modelMatrix, modelMatrix, [0.3, 0.15, -0.1]);
     mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(-this.carAngle), [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(angle), rotationAxis);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(this.carAngle), [0, 1, 0]);
 	mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
+    
+    
 	//TIRE - rear left
 	torusDraw();
 	gameManager.matrices.popMatrix(modelID);
 
 	gameManager.matrices.pushMatrix(modelID);
 	mat4.translate(modelMatrix, modelMatrix, [1.1, 0.15, -0.1]);
-	mat4.rotate(modelMatrix, modelMatrix, degToRad(this.wheel_angle), [0, 1, 0]);
     mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(this.wheel_angle), [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(-this.carAngle), [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(angle), rotationAxis);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(this.carAngle), [0, 1, 0]);
+    
 	mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
 	//TIRE - front left
 	torusDraw();
@@ -242,6 +269,9 @@ Car.prototype.draw = function() {
 	gameManager.matrices.pushMatrix(modelID);
 	mat4.translate(modelMatrix, modelMatrix, [0.3, 0.15, 1.1]);
     mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(-this.carAngle), [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(angle), rotationAxis);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(this.carAngle), [0, 1, 0]);
 	mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
 	//TIRE - rear right
 	torusDraw();
@@ -249,8 +279,13 @@ Car.prototype.draw = function() {
 
 	gameManager.matrices.pushMatrix(modelID);
 	mat4.translate(modelMatrix, modelMatrix, [1.1, 0.15, 1.1]);
-	mat4.rotate(modelMatrix, modelMatrix, degToRad(this.wheel_angle), [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(this.wheel_angle), [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(-this.carAngle), [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(angle), rotationAxis);
+    mat4.rotate(modelMatrix, modelMatrix, degToRad(this.carAngle), [0, 1, 0]);
+	
     mat4.scale(modelMatrix, modelMatrix, [0.3, 0.3, 0.3]);
+    
 	mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
 	//TIRE - front right
 	torusDraw();
@@ -258,6 +293,9 @@ Car.prototype.draw = function() {
 
     gameManager.matrices.popMatrix(modelID);
     gl.bindTexture(gl.TEXTURE_2D, null);
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.BLEND);
 }
 
 Car.prototype.updateAABBbox = function() {

@@ -61,8 +61,23 @@ function rotateCoordinate(point, center, angle) {
 }
 
 function normalize(vec) {
-	var length = vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
-	return [vec[0] / length, vec[1] / length, vec[2] / length];
+	var length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+	if (length != 0)
+		return [vec[0] / length, vec[1] / length, vec[2] / length];
+	else
+		return vec;
+}
+
+function crossProduct(vec1, vec2) {
+	var vec = [];
+	vec[0] = vec1[1] * vec2[2] - vec1[2] * vec2[1];
+	vec[1] = vec1[2] * vec2[0] - vec1[0] * vec2[2];
+	vec[2] = vec1[0] * vec2[1] - vec1[1] * vec2[0];
+	return vec;
+}
+
+function innerProduct(vec1, vec2) {
+	return vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec1[2] * vec2[2];
 }
 
 function multMatrixPoint(matrix, point, res) {
@@ -112,4 +127,8 @@ function computeNormal3x3() {
 	mNormal3x3[8] = (mMat3x3[0] * mMat3x3[4] - mMat3x3[3] * mMat3x3[1]) * invDet;
 
 	return mNormal3x3;
+}
+
+function generateRandomNumber(min, max) {
+	return Math.random() * (max - min) + min;
 }

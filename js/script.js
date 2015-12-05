@@ -198,14 +198,18 @@ function loadImages(urls, callback) {
 }
 
 function createTextures(images) {
-    for (var i = 0; i < 2; ++i) {
+    for (var i = 0; i < images.length; ++i) {
         var texture = gl.createTexture();
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, images[i]);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+
+        // gl.generateMipmap(gl.TEXTURE_2D);
         // add the texture to the array of textures.
         textures.push(texture);
     }
@@ -248,14 +252,12 @@ function tick() {
 
 
 function webGLStart() {
-
     var canvas = document.getElementById("micromachines-canvas");
     initGL(canvas);
   	gameManager = new GameManager(gl.viewportWidth, gl.viewportHeight);
-    loadImages(["resources/tiled.gif", "resources/lightwood.gif"], createTextures);
+    loadImages(["resources/tiled.gif", "resources/lightwood.gif", "resources/glass.gif", "resources/tire.gif", "resources/tree2.gif"], createTextures);
     initBuffers();
     initShaders();
-    gameManager.loadWorld();
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -315,8 +317,24 @@ function handleKeys() {
 
     }
 
+    if (currentlyPressedKeys[56]) {//8
+        gameManager.fog.mode = 0;
+    }
+    else if (currentlyPressedKeys[57]) {//9
+        gameManager.fog.mode = 1;
+    }
+    else if (currentlyPressedKeys[48]) {//0
+        gameManager.fog.mode = 2;
+    }
+    if (currentlyPressedKeys[73]) {//i
+        gameManager.fog.state = !gameManager.fog.state;
+        currentlyPressedKeys[73] = false;
+    }
+
+
     if (currentlyPressedKeys[78]) {//N
         gameManager.lights.directional[0].isEnabled = !gameManager.lights.directional[0].isEnabled;
+        gameManager.day = !gameManager.day;
         currentlyPressedKeys[78] = false;
     }
     if (currentlyPressedKeys[67]) {//C
