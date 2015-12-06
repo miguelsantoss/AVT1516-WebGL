@@ -17,15 +17,15 @@ function resize(canvas) {
   // Lookup the size the browser is displaying the canvas.
   var displayWidth  = canvas.clientWidth;
   var displayHeight = canvas.clientHeight;
- 
+
   // Check if the canvas is not the same size.
   if (canvas.width  != displayWidth ||
       canvas.height != displayHeight) {
- 
+
     // Make the canvas the same size
     canvas.width  = displayWidth;
     canvas.height = displayHeight;
-    
+
     gl.viewportWidth  = canvas.width;
     gl.viewportHeight = canvas.height;
   }
@@ -308,7 +308,10 @@ function handleKeys() {
     else {
         gameManager.car.acceleration_input =  0;
     }
-
+    if(currentlyPressedKeys[188]){
+      console.log("X: "+gameManager.car.position[0]);
+      console.log("Z: "+gameManager.car.position[2]);
+    }
 
     if (currentlyPressedKeys[79] || currentlyPressedKeys[37]) { //O or left arrow
         gameManager.car.steer_input =  -3;

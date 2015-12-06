@@ -330,39 +330,61 @@ GameManager.prototype.createCheerios = function() {
 		this.cheerios.push(new Cheerio([43.0, 1.1, 44.8]));
 		this.cheerios.push(new Cheerio([39.3, 1.1, 45.5]));
 		this.cheerios.push(new Cheerio([45.8, 1.1, 49.6]));
-		this.cheerios.push(new Cheerio([42.7, 1.1, 50.5]));
-		this.cheerios.push(new Cheerio([39.8, 1.1, 50.8]));
+		this.cheerios.push(new Cheerio([42.7, 1.1, 49.5]));
+		this.cheerios.push(new Cheerio([39.8, 1.1, 49.8]));
 		this.cheerios.push(new Cheerio([35.5, 1.1, 44.8]));
 //		 33.5f, 30.6f, 37.5f, 36.9f, 29.9f, 30.0f, 27.0f, 35.8f, 33.6f, 31.6f, 28.1f, 23.6f,
 //44.8f, 47.1f, 52.0f, 54.9f, 50.2f, 53.7f, 55.2f, 57.9f, 59.3f, 61.6f, 61.9f, 54.9f,
 		this.cheerios.push(new Cheerio([33.5, 1.1, 44.8]));
 		this.cheerios.push(new Cheerio([30.6, 1.1, 47.1]));
-		this.cheerios.push(new Cheerio([37.5, 1.1, 52.0]));
-		this.cheerios.push(new Cheerio([36.9, 1.1, 54.9]));
+		this.cheerios.push(new Cheerio([37.5, 1.1, 50.0]));
+		this.cheerios.push(new Cheerio([35.7, 1.1, 51.3]));
 		this.cheerios.push(new Cheerio([29.9, 1.1, 50.2]));
 		this.cheerios.push(new Cheerio([30.0, 1.1, 53.7]));
 		this.cheerios.push(new Cheerio([27.0, 1.1, 55.2]));
-		this.cheerios.push(new Cheerio([35.8, 1.1, 57.9]));
-		this.cheerios.push(new Cheerio([33.6, 1.1, 59.3]));
-		this.cheerios.push(new Cheerio([31.6, 1.1, 61.6]));
-		this.cheerios.push(new Cheerio([28.1, 1.1, 61.9]));
+		this.cheerios.push(new Cheerio([36.0, 1.1, 53.3]));
+		this.cheerios.push(new Cheerio([35.3, 1.1, 55.3]));
+		this.cheerios.push(new Cheerio([33.6, 1.1, 57.6]));
+		this.cheerios.push(new Cheerio([31.1, 1.1, 58.9]));
 		this.cheerios.push(new Cheerio([23.6, 1.1, 54.9]));
 //20.6f, 18.2f, 24.1f, 20.5f, 17.5f, 14.7f, 11.4f, 8.7f, 15.9f, 16.3f, 18.3f, 8.5f,
 //54.8f, 54.4f, 61.1f, 60.4f, 60.3f, 59.9f, 58.7f, 55.8f, 52.6f, 50.0f, 48.6f,
 		this.cheerios.push(new Cheerio([20.6, 1.1, 54.8]));
 		this.cheerios.push(new Cheerio([18.2, 1.1, 54.4]));
-		this.cheerios.push(new Cheerio([24.1, 1.1, 61.1]));
-		this.cheerios.push(new Cheerio([20.5, 1.1, 60.4]));
-		this.cheerios.push(new Cheerio([17.5, 1.1, 60.3]));
-		this.cheerios.push(new Cheerio([14.7, 1.1, 59.9]));
-		this.cheerios.push(new Cheerio([11.4, 1.1, 58.7]));
-		this.cheerios.push(new Cheerio([8.7, 1.1, 55.8]));
+		this.cheerios.push(new Cheerio([28.8, 1.1, 59.4]));
+		this.cheerios.push(new Cheerio([20.5, 1.1, 59.4]));
+		this.cheerios.push(new Cheerio([24.8, 1.1, 59.3]));
+		this.cheerios.push(new Cheerio([15.5, 1.1, 58.5]));
+		this.cheerios.push(new Cheerio([12.6, 1.1, 56.5]));
+		this.cheerios.push(new Cheerio([10.8, 1.1, 55.8]));
 		this.cheerios.push(new Cheerio([15.9, 1.1, 52.6]));
 		this.cheerios.push(new Cheerio([16.3, 1.1, 50.0]));
-		this.cheerios.push(new Cheerio([8.5, 1.1, 48.6]));
+		this.cheerios.push(new Cheerio([10.5, 1.1, 54.0]));//
 //9.2f, 11.3f, 13.5f, 16.7f, 21.9f, 25.6f, 28.3f, 29.2f, 19.0f, 20.8f, 20.4f, 18.4f, 28.5f, 26.4f, 15.2f, 12.0f, 8.9f, 24.9f, 22.7f, 19.3f,
 // 52.3f, 49.2f, 45.7f, 44.1f, 42.6f, 47.2f, 45.3f, 42.9f, 40.7f, 41.0f, 39.3f, 35.8f, 33.6f, 37.4f, 34.4f, 32.0f, 31.9f, 31.9f, 31.3f, 29.4f,
-		this.cheerios.push(new Cheerio([9.2, 1.1, 52.3]));
+		this.cheerios.push(new Cheerio([10.3, 1.1, 52.3]));
+		this.cheerios.push(new Cheerio([19.8, 1.1, 43.7]));
+		this.cheerios.push(new Cheerio([15.0, 1.1, 44.5]));
+		this.cheerios.push(new Cheerio([22.5, 1.1, 41.0]));
+		this.cheerios.push(new Cheerio([22.1, 1.1, 39.5]));
+		this.cheerios.push(new Cheerio([21.4, 1.1, 37.8]));
+		this.cheerios.push(new Cheerio([20.6, 1.1, 36.8]));
+		this.cheerios.push(new Cheerio([23.2, 1.1, 48.1]));
+		this.cheerios.push(new Cheerio([28.6, 1.1, 44.1]));
+		this.cheerios.push(new Cheerio([26.8, 1.1, 46.2]));
+		this.cheerios.push(new Cheerio([28.8, 1.1, 41.8]));
+		this.cheerios.push(new Cheerio([28.3, 1.1, 40.7]));
+		this.cheerios.push(new Cheerio([27.6, 1.1, 39.7]));
+		this.cheerios.push(new Cheerio([26.9, 1.1, 38.0]));
+		this.cheerios.push(new Cheerio([25.4, 1.1, 36.4]));
+		this.cheerios.push(new Cheerio([24.0, 1.1, 34.4]));
+		this.cheerios.push(new Cheerio([22.7, 1.1, 32.7]));
+		this.cheerios.push(new Cheerio([20.6, 1.1, 30.5]));
+		this.cheerios.push(new Cheerio([17.9, 1.1, 28.8]));
+
+		this.cheerios.push(new Cheerio([19.2, 1.1, 49.1]));
+		this.cheerios.push(new Cheerio([22.1, 1.1, 48.5]));
+		this.cheerios.push(new Cheerio([18.0, 1.1, 44.2]));
 		this.cheerios.push(new Cheerio([11.3, 1.1, 49.2]));
 		this.cheerios.push(new Cheerio([13.5, 1.1, 45.7]));
 		this.cheerios.push(new Cheerio([16.7, 1.1, 44.1]));
@@ -370,18 +392,27 @@ GameManager.prototype.createCheerios = function() {
 		this.cheerios.push(new Cheerio([25.6, 1.1, 47.2]));
 		this.cheerios.push(new Cheerio([28.3, 1.1, 45.3]));
 		this.cheerios.push(new Cheerio([29.2, 1.1, 42.9]));
-		this.cheerios.push(new Cheerio([19.0, 1.1, 40.7]));
-		this.cheerios.push(new Cheerio([20.8, 1.1, 41.0]));
-		this.cheerios.push(new Cheerio([20.4, 1.1, 39.3]));
 		this.cheerios.push(new Cheerio([18.4, 1.1, 35.8]));
-		this.cheerios.push(new Cheerio([28.5, 1.1, 33.6]));
 		this.cheerios.push(new Cheerio([26.4, 1.1, 37.4]));
 		this.cheerios.push(new Cheerio([15.2, 1.1, 34.4]));
 		this.cheerios.push(new Cheerio([12.0, 1.1, 32.0]));
 		this.cheerios.push(new Cheerio([8.9, 1.1, 31.9]));
-		this.cheerios.push(new Cheerio([24.9, 1.1, 31.9]));
 		this.cheerios.push(new Cheerio([22.7, 1.1, 31.3]));
 		this.cheerios.push(new Cheerio([19.3, 1.1, 29.4]));
+		this.cheerios.push(new Cheerio([21.5, 1.1, 31.2]));
+		this.cheerios.push(new Cheerio([17.3, 1.1, 34.8]));
+		this.cheerios.push(new Cheerio([14.1, 1.1, 32.8]));
+		this.cheerios.push(new Cheerio([7.3, 1.1, 31.9]));
+		this.cheerios.push(new Cheerio([5.6, 1.1, 31.8]));
+		this.cheerios.push(new Cheerio([1.1, 1.1, 23.9]));
+		this.cheerios.push(new Cheerio([1.2, 1.1, 22.1]));
+		this.cheerios.push(new Cheerio([7.5, 1.1, 28.4]));
+		this.cheerios.push(new Cheerio([5.8, 1.1, 28.0]));
+		this.cheerios.push(new Cheerio([6.4, 1.1, 27.7]));
+		this.cheerios.push(new Cheerio([7.2, 1.1, 27.4]));
+		this.cheerios.push(new Cheerio([6.2, 1.1, 26.5]));
+		this.cheerios.push(new Cheerio([10.2, 1.1, 25.1]));
+		this.cheerios.push(new Cheerio([7.6, 1.1, 19.5]));
 //	16.0f, 13.4f, 11.3f, 5.3f, 3.3f, 1.8f, 1.6f, 1.1f, 9.3f, 8.6f, 7.8f, 7.9f, 0.9f, 1.4f, 1.7f, 8.9f, 10.7f, 12.2f, 14.3f, 17.5f, 19.9f,
 //28.5f, 27.2f, 26.6f, 26.5f, 31.4f, 29.7f, 27.9f, 25.2f, 22.9f, 25.3f, 23.5f, 21.0f, 18.9f, 20.2f, 18.5f, 16.9f, 16.6f, 14.6f, 13.2f, 11.7f, 10.5f,
 		this.cheerios.push(new Cheerio([16.0, 1.1, 28.5]));
@@ -392,7 +423,6 @@ GameManager.prototype.createCheerios = function() {
 		this.cheerios.push(new Cheerio([1.8, 1.1, 29.7]));
 		this.cheerios.push(new Cheerio([1.6, 1.1, 27.9]));
 		this.cheerios.push(new Cheerio([1.1, 1.1, 25.2]));
-		this.cheerios.push(new Cheerio([9.3, 1.1, 22.9]));
 		this.cheerios.push(new Cheerio([8.6, 1.1, 25.3]));
 		this.cheerios.push(new Cheerio([7.8, 1.1, 23.5]));
 		this.cheerios.push(new Cheerio([7.9, 1.1, 21.0]));
@@ -419,6 +449,29 @@ GameManager.prototype.createCheerios = function() {
 		this.cheerios.push(new Cheerio([6.2, 1.1, 8.5]));
 		this.cheerios.push(new Cheerio([4.4, 1.1, 10.5]));
 		this.cheerios.push(new Cheerio([2.9, 1.1, 12.6]));
+		this.cheerios.push(new Cheerio([1.4, 1.1, 16.8]));
+		this.cheerios.push(new Cheerio([1.7, 1.1, 15.2]));
+		this.cheerios.push(new Cheerio([2.1, 1.1, 13.4]));
+		this.cheerios.push(new Cheerio([23.9, 1.1, 3.6]));
+		this.cheerios.push(new Cheerio([25.8, 1.1, 3.8]));
+		this.cheerios.push(new Cheerio([27.2, 1.1, 3.8]));
+		this.cheerios.push(new Cheerio([23.8, 1.1, 9.2]));
+		this.cheerios.push(new Cheerio([32.3, 1.1, 45.4]));
+		this.cheerios.push(new Cheerio([30.0, 1.1, 48.4]));
+		this.cheerios.push(new Cheerio([29.6, 1.1, 51.3]));
+		this.cheerios.push(new Cheerio([37.0, 1.1, 44.7]));
+		this.cheerios.push(new Cheerio([47.6, 1.1, 48.2]));
+		this.cheerios.push(new Cheerio([41.5, 1.1, 45.1]));
+		this.cheerios.push(new Cheerio([43.9, 1.1, 40.5]));
+		this.cheerios.push(new Cheerio([44.6, 1.1, 49.2]));
+		this.cheerios.push(new Cheerio([18.0, 1.1, 58.6]));
+		this.cheerios.push(new Cheerio([14.1, 1.1, 57.6]));
+		this.cheerios.push(new Cheerio([11.8, 1.1, 47.7]));
+		this.cheerios.push(new Cheerio([43.6, 1.1, 42.8]));
+		this.cheerios.push(new Cheerio([7.7, 1.1, 18.3]));
+		this.cheerios.push(new Cheerio([53.8, 1.1, 9.3]));
+		this.cheerios.push(new Cheerio([52.0, 1.1, 16.0]));
+		this.cheerios.push(new Cheerio([44.2, 1.1, 35.0]));
 }
 
 GameManager.prototype.createTreeBillboards = function() {
