@@ -39,20 +39,45 @@ GameManager.prototype.updatePerspectiveCamera = function() {
 	var newPosition  = [position[0] - 2 * direction[0], position[1] + 1, position[2] - 2 * direction[2]];
 	var newDirection = [position[0] + 5 * direction[0] - this.cameras[1].camX * direction[0], position[1] - this.cameras[1].camY, position[2] + 5 * direction[2] - this.cameras[1].camZ * direction[2]];
 	this.cameras[1].updateLookAt(newPosition, newDirection);
+	newPosition  = [position[0] -0 * direction[0], position[1] + 0.3, position[2] -0 * direction[2]];
+    this.cameras[2].updateLookAt(newPosition, direction);
 }
 
-GameManager.prototype.draw = function() {
-	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+GameManager.prototype.draw = function(){
     this.setUpFog();
 
-    mat4.identity(modelMatrix);
-    mat4.identity(viewMatrix);
-    mat4.identity(projectionMatrix);
-
     gameManager.updatePerspectiveCamera();
-    gameManager.activeCameraProj();
+
+    gl.clear(gl.COLOR_BUFFER_BIT||gl.DEPTH_BUFFER_BIT);
+        //left
+        mat4.identity(projectionMatrix);
+        mat4.identity(modelMatrix);
+        mat4.identity(viewMatrix);
+        gl.viewport(0, 0, gl.viewportWidth/2, gl.viewportHeight);
+            this.cameras[2].computeLeftProjection();
+            this.drawObjects();
+
+        //right
+        mat4.identity(projectionMatrix);
+        mat4.identity(modelMatrix);
+        mat4.identity(viewMatrix);
+        gl.viewport(gl.viewportWidth/2, 0, gl.viewportWidth/2, gl.viewportHeight);
+            this.cameras[2].computeRightProjection();
+            this.drawObjects();
+}
+
+GameManager.prototype.drawObjects = function() {
+	//gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+
+    /*mat4.identity(modelMatrix);
+    mat4.identity(viewMatrix);
+    mat4.identity(projectionMatrix);*/
+
+    //gameManager.updatePerspectiveCamera();
+    //gameManager.activeCameraProj();
     gameManager.setUpLightsUniforms();
 
     gl.uniform1i(shaderProgram.particleMode, 0);
@@ -250,6 +275,7 @@ GameManager.prototype.createCameras = function() {
     this.activeCamera = 1;
     this.cameras.push(new OrthogonalCamera(-5, 65, -5, 65, -10, 10));
     this.cameras.push(new PerspectiveCamera(degToRad(75), this.width / this.height, 0.1, 100, [0, 1, 0], [1, 1, 1]));
+    this.cameras.push(new StereoCamera(degToRad(75), this.width / this.height, 0.05, 100, [0, 1, 0], [1, 1, 1], [0, 1, 0], 30, degToRad(45)));
 }
 
 GameManager.prototype.createOranges = function() {
