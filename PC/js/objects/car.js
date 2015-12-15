@@ -321,7 +321,9 @@ Car.prototype.checkInside = function(obj) {
 }
 
 Car.prototype.checkCollision = function(obj) {
-    return ((this.AABBbox.XMax > obj.AABBbox.XMin) && (this.AABBbox.XMin < obj.AABBbox.XMax) && (this.AABBbox.ZMax > obj.AABBbox.ZMin) && (this.AABBbox.ZMin < obj.AABBbox.ZMax));
+    if (obj.position[1] != 2000)
+        return ((this.AABBbox.XMax > obj.AABBbox.XMin) && (this.AABBbox.XMin < obj.AABBbox.XMax) && (this.AABBbox.ZMax > obj.AABBbox.ZMin) && (this.AABBbox.ZMin < obj.AABBbox.ZMax));
+    return false;
 }
 
 Car.prototype.dealColision = function() {

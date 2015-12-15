@@ -5,6 +5,8 @@ function GameManager(width, height) {
     this.gameOver       = false;
     this.pause          = false;
 
+    this.carDefaultPosition = [1.0, 1.15, 1.0];
+
     this.fog            = {};
     this.fog.dayColor   = [0.46, 0.82, 0.97, 1.00];
     this.fog.nightColor = [0.00, 0.06, 0.16, 1.00];
@@ -159,9 +161,9 @@ GameManager.prototype.loadWorld = function() {
     this.world.material.texCount   = 0;
 
     this.world.XMin = 0.00;
-    this.world.XMax = 60.0;
+    this.world.XMax = 20.0;
     this.world.ZMin = 0.00;
-    this.world.ZMax = 60.0;
+    this.world.ZMax = 20.0;
 
     this.world.VertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.world.VertexPositionBuffer);
@@ -191,8 +193,8 @@ GameManager.prototype.loadWorld = function() {
 GameManager.prototype.drawWorld = function() {
     gameManager.matrices.pushMatrix(modelID);
 
-    mat4.translate(modelMatrix, modelMatrix, [30, 1, 30]);
-    mat4.scale(modelMatrix, modelMatrix, [60, 60, 60]);
+    mat4.translate(modelMatrix, modelMatrix, [10, 1, 10]);
+    mat4.scale(modelMatrix, modelMatrix, [20, 20, 20]);
     mat4.rotate(modelMatrix, modelMatrix, Math.PI/2, [1, 0, 0]);
 
     gl.activeTexture(gl.TEXTURE0);
@@ -232,7 +234,7 @@ GameManager.prototype.drawWorld = function() {
 
 GameManager.prototype.createObjects = function() {
     this.loadWorld();
-    this.car = new Car([28.7, 1.15, 6.1], [1.0, 0.0, 0.0]);
+    this.car = new Car(this.carDefaultPosition, [1.0, 0.0, 0.0]);
     this.oranges = [];
     this.createOranges();
     this.butters = [];
@@ -251,231 +253,39 @@ GameManager.prototype.createCameras = function() {
 }
 
 GameManager.prototype.createOranges = function() {
-	this.oranges.push(new Orange([50.7, 2.0, 6.1], [1.0, 0.0, 0.0], [0.00125, 0.0, 0.0]));
-	this.oranges.push(new Orange([30.7, 2.0, 6.1], [1.0, 0.0, 1.0], [0.00125, 0.0, 0.00125]));
-	this.oranges.push(new Orange([30.7, 2.0, 6.1], [0.0, 0.0, 1.0], [0.0, 0.0, 0.00125]));
-    this.oranges.push(new Orange(this.world));
-    this.oranges.push(new Orange(this.world));
-    this.oranges.push(new Orange(this.world));
     this.oranges.push(new Orange(this.world));
     this.oranges.push(new Orange(this.world));
 }
 
 GameManager.prototype.createButters = function() {
-    this.butters.push(new Butter([47.4, 1.0, 17.4]));
-    this.butters.push(new Butter([49.3, 1.0, 33.0]));
-    this.butters.push(new Butter([37.3, 1.0, 49.8]));
+    this.butters.push(new Butter([11.8, 1.0, 4.26]));
+    this.butters.push(new Butter([5.54, 1.0, 12.5]));
 }
 
 GameManager.prototype.createCheerios = function() {
-	//29.0f, 29.5f, 30.0f, 29.0f, 29.5f, 30.0f, 33.0f, 36.0f, 39.0f, 42.0f, 45.0f, 48.0f, 51.0f, 53.0f, 54.0f, 54.4f, 53.8f, 33.0f, 36.0f, 39.0f,
-	//4.0f, 4.0f, 4.0f, 9.0f, 9.0f, 9.0f, 3.8f, 3.6f, 3.4f, 3.2f, 3.0f, 3.4f, 4.6f, 5.8f, 8.0f, 11.0f, 14.0f, 8.8f, 8.6f, 8.4f,
+    this.cheerios.push(new Cheerio([3.10, 1.1, 3.26]));
+    this.cheerios.push(new Cheerio([5.59, 1.1, 3.26]));
+    this.cheerios.push(new Cheerio([8.34, 1.1, 3.26]));
+    this.cheerios.push(new Cheerio([11.65, 1.1, 2.93]));
+    this.cheerios.push(new Cheerio([14.35, 1.1, 2.69]));
+    this.cheerios.push(new Cheerio([15.95, 1.1, 6.02]));
+    this.cheerios.push(new Cheerio([15.95, 1.1, 9.02]));
 
-		this.cheerios.push(new Cheerio([29.0, 1.1, 4.0]));
-    this.cheerios.push(new Cheerio([29.5, 1.1, 4.0]));
-    this.cheerios.push(new Cheerio([30.0, 1.1, 4.0]));
-		this.cheerios.push(new Cheerio([29.0, 1.1, 9.0]));
-		this.cheerios.push(new Cheerio([29.5, 1.1, 9.0]));
-		this.cheerios.push(new Cheerio([30.0, 1.1, 9.0]));
-		this.cheerios.push(new Cheerio([33.0, 1.1, 3.8]));
-		this.cheerios.push(new Cheerio([36.0, 1.1, 3.6]));
-		this.cheerios.push(new Cheerio([39.0, 1.1, 3.4]));
-		this.cheerios.push(new Cheerio([42.0, 1.1, 3.2]));
-		this.cheerios.push(new Cheerio([45.0, 1.1, 3.0]));
-		this.cheerios.push(new Cheerio([48.0, 1.1, 3.4]));
-		this.cheerios.push(new Cheerio([51.0, 1.1, 4.6]));
-		this.cheerios.push(new Cheerio([53.0, 1.1, 5.8]));
-		this.cheerios.push(new Cheerio([54.0, 1.1, 8.0]));
-		this.cheerios.push(new Cheerio([54.4, 1.1, 11.0]));
-		this.cheerios.push(new Cheerio([53.8, 1.1, 14.0]));
-		this.cheerios.push(new Cheerio([33.0, 1.1, 8.8]));
-		this.cheerios.push(new Cheerio([36.0, 1.1, 8.6]));
-		this.cheerios.push(new Cheerio([39.0, 1.1, 8.4]));
-//		 42.0f, 45.0f, 47.0f, 47.0f,  52.8f, 45.6f, 42.0f, 50.6f, 48.4f, 45.0f, 42.9f, 42.7f, 39.1f, 37.1f, 36.1f, 36.1f, 38.3f, 40.4f, 42.9f,
-// 8.2f, 8.0f, 9.4f, 12.0f, 15.0f, 13.7f, 13.8f, 17.3f, 17.9f, 18.6f, 19.6f, 21.9f, 14.9f, 17.6f, 20.8f, 23.9f, 26.8f, 28.9f, 30.4f,
-		this.cheerios.push(new Cheerio([42.0, 1.1, 8.2]));
-		this.cheerios.push(new Cheerio([45.0, 1.1, 8.0]));
-		this.cheerios.push(new Cheerio([47.0, 1.1, 9.4]));
-		this.cheerios.push(new Cheerio([47.0, 1.1, 12.0]));
-		this.cheerios.push(new Cheerio([52.8, 1.1, 15.0]));
-		this.cheerios.push(new Cheerio([45.6, 1.1, 13.7]));
-		this.cheerios.push(new Cheerio([42.0, 1.1, 13.8]));
-		this.cheerios.push(new Cheerio([50.6, 1.1, 17.3]));
-		this.cheerios.push(new Cheerio([48.4, 1.1, 17.9]));
-		this.cheerios.push(new Cheerio([45.0, 1.1, 18.6]));
-		this.cheerios.push(new Cheerio([42.9, 1.1, 19.6]));
-		this.cheerios.push(new Cheerio([42.7, 1.1, 21.9]));
-		this.cheerios.push(new Cheerio([39.1, 1.1, 14.9]));
-		this.cheerios.push(new Cheerio([37.1, 1.1, 17.6]));
-		this.cheerios.push(new Cheerio([36.1, 1.1, 20.8]));
-		this.cheerios.push(new Cheerio([36.1, 1.1, 23.9]));
-		this.cheerios.push(new Cheerio([38.3, 1.1, 26.8]));
-		this.cheerios.push(new Cheerio([40.4, 1.1, 28.9]));
-		this.cheerios.push(new Cheerio([42.9, 1.1, 30.4]));
-//		44.0f, 45.6f, 47.7f, 49.6f, 51.4f, 51.9f, 44.7f, 44.0f, 51.4f, 51.8f, 51.0f, 49.6f, 44.0f, 43.0f, 39.3f, 45.8f, 42.7f, 39.8f, 35.5f,
-//  33.6f, 24.3f, 27.3f, 30.7f, 33.3f, 36.7f, 37.2f, 39.0f, 39.4f, 42.3f, 45.0f, 47.8f, 41.7f, 44.8f, 45.5f, 49.6f, 50.5f, 50.8f, 44.8f,
-		this.cheerios.push(new Cheerio([44.0, 1.1, 33.6]));
-		this.cheerios.push(new Cheerio([45.6, 1.1, 24.3]));
-		this.cheerios.push(new Cheerio([47.7, 1.1, 27.3]));
-		this.cheerios.push(new Cheerio([49.6, 1.1, 30.7]));
-		this.cheerios.push(new Cheerio([51.4, 1.1, 33.3]));
-		this.cheerios.push(new Cheerio([51.9, 1.1, 36.7]));
-		this.cheerios.push(new Cheerio([44.7, 1.1, 37.2]));
-		this.cheerios.push(new Cheerio([44.0, 1.1, 39.0]));
-		this.cheerios.push(new Cheerio([51.4, 1.1, 39.4]));
-		this.cheerios.push(new Cheerio([51.8, 1.1, 42.3]));
-		this.cheerios.push(new Cheerio([51.0, 1.1, 45.0]));
-		this.cheerios.push(new Cheerio([49.6, 1.1, 47.8]));
-		this.cheerios.push(new Cheerio([44.0, 1.1, 41.7]));
-		this.cheerios.push(new Cheerio([43.0, 1.1, 44.8]));
-		this.cheerios.push(new Cheerio([39.3, 1.1, 45.5]));
-		this.cheerios.push(new Cheerio([45.8, 1.1, 49.6]));
-		this.cheerios.push(new Cheerio([42.7, 1.1, 49.5]));
-		this.cheerios.push(new Cheerio([39.8, 1.1, 49.8]));
-		this.cheerios.push(new Cheerio([35.5, 1.1, 44.8]));
-//		 33.5f, 30.6f, 37.5f, 36.9f, 29.9f, 30.0f, 27.0f, 35.8f, 33.6f, 31.6f, 28.1f, 23.6f,
-//44.8f, 47.1f, 52.0f, 54.9f, 50.2f, 53.7f, 55.2f, 57.9f, 59.3f, 61.6f, 61.9f, 54.9f,
-		this.cheerios.push(new Cheerio([33.5, 1.1, 44.8]));
-		this.cheerios.push(new Cheerio([30.6, 1.1, 47.1]));
-		this.cheerios.push(new Cheerio([37.5, 1.1, 50.0]));
-		this.cheerios.push(new Cheerio([35.7, 1.1, 51.3]));
-		this.cheerios.push(new Cheerio([29.9, 1.1, 50.2]));
-		this.cheerios.push(new Cheerio([30.0, 1.1, 53.7]));
-		this.cheerios.push(new Cheerio([27.0, 1.1, 55.2]));
-		this.cheerios.push(new Cheerio([36.0, 1.1, 53.3]));
-		this.cheerios.push(new Cheerio([35.3, 1.1, 55.3]));
-		this.cheerios.push(new Cheerio([33.6, 1.1, 57.6]));
-		this.cheerios.push(new Cheerio([31.1, 1.1, 58.9]));
-		this.cheerios.push(new Cheerio([23.6, 1.1, 54.9]));
-//20.6f, 18.2f, 24.1f, 20.5f, 17.5f, 14.7f, 11.4f, 8.7f, 15.9f, 16.3f, 18.3f, 8.5f,
-//54.8f, 54.4f, 61.1f, 60.4f, 60.3f, 59.9f, 58.7f, 55.8f, 52.6f, 50.0f, 48.6f,
-		this.cheerios.push(new Cheerio([20.6, 1.1, 54.8]));
-		this.cheerios.push(new Cheerio([18.2, 1.1, 54.4]));
-		this.cheerios.push(new Cheerio([28.8, 1.1, 59.4]));
-		this.cheerios.push(new Cheerio([20.5, 1.1, 59.4]));
-		this.cheerios.push(new Cheerio([24.8, 1.1, 59.3]));
-		this.cheerios.push(new Cheerio([15.5, 1.1, 58.5]));
-		this.cheerios.push(new Cheerio([12.6, 1.1, 56.5]));
-		this.cheerios.push(new Cheerio([10.8, 1.1, 55.8]));
-		this.cheerios.push(new Cheerio([15.9, 1.1, 52.6]));
-		this.cheerios.push(new Cheerio([16.3, 1.1, 50.0]));
-		this.cheerios.push(new Cheerio([10.5, 1.1, 54.0]));//
-//9.2f, 11.3f, 13.5f, 16.7f, 21.9f, 25.6f, 28.3f, 29.2f, 19.0f, 20.8f, 20.4f, 18.4f, 28.5f, 26.4f, 15.2f, 12.0f, 8.9f, 24.9f, 22.7f, 19.3f,
-// 52.3f, 49.2f, 45.7f, 44.1f, 42.6f, 47.2f, 45.3f, 42.9f, 40.7f, 41.0f, 39.3f, 35.8f, 33.6f, 37.4f, 34.4f, 32.0f, 31.9f, 31.9f, 31.3f, 29.4f,
-		this.cheerios.push(new Cheerio([10.3, 1.1, 52.3]));
-		this.cheerios.push(new Cheerio([19.8, 1.1, 43.7]));
-		this.cheerios.push(new Cheerio([15.0, 1.1, 44.5]));
-		this.cheerios.push(new Cheerio([22.5, 1.1, 41.0]));
-		this.cheerios.push(new Cheerio([22.1, 1.1, 39.5]));
-		this.cheerios.push(new Cheerio([21.4, 1.1, 37.8]));
-		this.cheerios.push(new Cheerio([20.6, 1.1, 36.8]));
-		this.cheerios.push(new Cheerio([23.2, 1.1, 48.1]));
-		this.cheerios.push(new Cheerio([28.6, 1.1, 44.1]));
-		this.cheerios.push(new Cheerio([26.8, 1.1, 46.2]));
-		this.cheerios.push(new Cheerio([28.8, 1.1, 41.8]));
-		this.cheerios.push(new Cheerio([28.3, 1.1, 40.7]));
-		this.cheerios.push(new Cheerio([27.6, 1.1, 39.7]));
-		this.cheerios.push(new Cheerio([26.9, 1.1, 38.0]));
-		this.cheerios.push(new Cheerio([25.4, 1.1, 36.4]));
-		this.cheerios.push(new Cheerio([24.0, 1.1, 34.4]));
-		this.cheerios.push(new Cheerio([22.7, 1.1, 32.7]));
-		this.cheerios.push(new Cheerio([20.6, 1.1, 30.5]));
-		this.cheerios.push(new Cheerio([17.9, 1.1, 28.8]));
-
-		this.cheerios.push(new Cheerio([19.2, 1.1, 49.1]));
-		this.cheerios.push(new Cheerio([22.1, 1.1, 48.5]));
-		this.cheerios.push(new Cheerio([18.0, 1.1, 44.2]));
-		this.cheerios.push(new Cheerio([11.3, 1.1, 49.2]));
-		this.cheerios.push(new Cheerio([13.5, 1.1, 45.7]));
-		this.cheerios.push(new Cheerio([16.7, 1.1, 44.1]));
-		this.cheerios.push(new Cheerio([21.9, 1.1, 42.6]));
-		this.cheerios.push(new Cheerio([25.6, 1.1, 47.2]));
-		this.cheerios.push(new Cheerio([28.3, 1.1, 45.3]));
-		this.cheerios.push(new Cheerio([29.2, 1.1, 42.9]));
-		this.cheerios.push(new Cheerio([18.4, 1.1, 35.8]));
-		this.cheerios.push(new Cheerio([26.4, 1.1, 37.4]));
-		this.cheerios.push(new Cheerio([15.2, 1.1, 34.4]));
-		this.cheerios.push(new Cheerio([12.0, 1.1, 32.0]));
-		this.cheerios.push(new Cheerio([8.9, 1.1, 31.9]));
-		this.cheerios.push(new Cheerio([22.7, 1.1, 31.3]));
-		this.cheerios.push(new Cheerio([19.3, 1.1, 29.4]));
-		this.cheerios.push(new Cheerio([21.5, 1.1, 31.2]));
-		this.cheerios.push(new Cheerio([17.3, 1.1, 34.8]));
-		this.cheerios.push(new Cheerio([14.1, 1.1, 32.8]));
-		this.cheerios.push(new Cheerio([7.3, 1.1, 31.9]));
-		this.cheerios.push(new Cheerio([5.6, 1.1, 31.8]));
-		this.cheerios.push(new Cheerio([1.1, 1.1, 23.9]));
-		this.cheerios.push(new Cheerio([1.2, 1.1, 22.1]));
-		this.cheerios.push(new Cheerio([7.5, 1.1, 28.4]));
-		this.cheerios.push(new Cheerio([5.8, 1.1, 28.0]));
-		this.cheerios.push(new Cheerio([6.4, 1.1, 27.7]));
-		this.cheerios.push(new Cheerio([7.2, 1.1, 27.4]));
-		this.cheerios.push(new Cheerio([6.2, 1.1, 26.5]));
-		this.cheerios.push(new Cheerio([10.2, 1.1, 25.1]));
-		this.cheerios.push(new Cheerio([7.6, 1.1, 19.5]));
-//	16.0f, 13.4f, 11.3f, 5.3f, 3.3f, 1.8f, 1.6f, 1.1f, 9.3f, 8.6f, 7.8f, 7.9f, 0.9f, 1.4f, 1.7f, 8.9f, 10.7f, 12.2f, 14.3f, 17.5f, 19.9f,
-//28.5f, 27.2f, 26.6f, 26.5f, 31.4f, 29.7f, 27.9f, 25.2f, 22.9f, 25.3f, 23.5f, 21.0f, 18.9f, 20.2f, 18.5f, 16.9f, 16.6f, 14.6f, 13.2f, 11.7f, 10.5f,
-		this.cheerios.push(new Cheerio([16.0, 1.1, 28.5]));
-		this.cheerios.push(new Cheerio([13.4, 1.1, 27.2]));
-		this.cheerios.push(new Cheerio([11.3, 1.1, 26.6]));
-		this.cheerios.push(new Cheerio([5.3, 1.1, 26.5]));
-		this.cheerios.push(new Cheerio([3.3, 1.1, 31.4]));
-		this.cheerios.push(new Cheerio([1.8, 1.1, 29.7]));
-		this.cheerios.push(new Cheerio([1.6, 1.1, 27.9]));
-		this.cheerios.push(new Cheerio([1.1, 1.1, 25.2]));
-		this.cheerios.push(new Cheerio([8.6, 1.1, 25.3]));
-		this.cheerios.push(new Cheerio([7.8, 1.1, 23.5]));
-		this.cheerios.push(new Cheerio([7.9, 1.1, 21.0]));
-		this.cheerios.push(new Cheerio([0.9, 1.1, 18.9]));
-		this.cheerios.push(new Cheerio([1.4, 1.1, 20.2]));
-		this.cheerios.push(new Cheerio([1.7, 1.1, 18.5]));
-		this.cheerios.push(new Cheerio([8.9, 1.1, 16.9]));
-		this.cheerios.push(new Cheerio([10.7, 1.1, 16.6]));
-		this.cheerios.push(new Cheerio([12.2, 1.1, 14.6]));
-		this.cheerios.push(new Cheerio([14.3, 1.1, 13.2]));
-		this.cheerios.push(new Cheerio([17.5, 1.1, 11.7]));
-		this.cheerios.push(new Cheerio([19.9, 1.1, 10.5]));
-// 22.6f, 26.2f, 25.8f, 22.9f, 19.3f, 16.8f, 13.5f, 10.7f, 8.1f, 6.2f, 4.4f, 2.9f};
-//9.6f, 9.4f, 8.9f, 3.7f, 4.0f, 3.9f, 4.6f, 5.2f, 6.8f, 8.5f, 10.5f, 12.6f, 14.9f};
-		this.cheerios.push(new Cheerio([22.6, 1.1, 9.6]));
-		this.cheerios.push(new Cheerio([26.2, 1.1, 9.4]));
-		this.cheerios.push(new Cheerio([25.8, 1.1, 8.9]));
-		this.cheerios.push(new Cheerio([22.9, 1.1, 3.7]));
-		this.cheerios.push(new Cheerio([19.3, 1.1, 4.0]));
-		this.cheerios.push(new Cheerio([16.8, 1.1, 3.9]));
-		this.cheerios.push(new Cheerio([13.5, 1.1, 4.6]));
-		this.cheerios.push(new Cheerio([10.7, 1.1, 5.2]));
-		this.cheerios.push(new Cheerio([8.1, 1.1, 6.8]));
-		this.cheerios.push(new Cheerio([6.2, 1.1, 8.5]));
-		this.cheerios.push(new Cheerio([4.4, 1.1, 10.5]));
-		this.cheerios.push(new Cheerio([2.9, 1.1, 12.6]));
-		this.cheerios.push(new Cheerio([1.4, 1.1, 16.8]));
-		this.cheerios.push(new Cheerio([1.7, 1.1, 15.2]));
-		this.cheerios.push(new Cheerio([2.1, 1.1, 13.4]));
-		this.cheerios.push(new Cheerio([23.9, 1.1, 3.6]));
-		this.cheerios.push(new Cheerio([25.8, 1.1, 3.8]));
-		this.cheerios.push(new Cheerio([27.2, 1.1, 3.8]));
-		this.cheerios.push(new Cheerio([23.8, 1.1, 9.2]));
-		this.cheerios.push(new Cheerio([32.3, 1.1, 45.4]));
-		this.cheerios.push(new Cheerio([30.0, 1.1, 48.4]));
-		this.cheerios.push(new Cheerio([29.6, 1.1, 51.3]));
-		this.cheerios.push(new Cheerio([37.0, 1.1, 44.7]));
-		this.cheerios.push(new Cheerio([47.6, 1.1, 48.2]));
-		this.cheerios.push(new Cheerio([41.5, 1.1, 45.1]));
-		this.cheerios.push(new Cheerio([43.9, 1.1, 40.5]));
-		this.cheerios.push(new Cheerio([44.6, 1.1, 49.2]));
-		this.cheerios.push(new Cheerio([18.0, 1.1, 58.6]));
-		this.cheerios.push(new Cheerio([14.1, 1.1, 57.6]));
-		this.cheerios.push(new Cheerio([11.8, 1.1, 47.7]));
-		this.cheerios.push(new Cheerio([43.6, 1.1, 42.8]));
-		this.cheerios.push(new Cheerio([7.7, 1.1, 18.3]));
-		this.cheerios.push(new Cheerio([53.8, 1.1, 9.3]));
-		this.cheerios.push(new Cheerio([52.0, 1.1, 16.0]));
-		this.cheerios.push(new Cheerio([44.2, 1.1, 35.0]));
+    this.cheerios.push(new Cheerio([15.94, 1.1, 11.25]));
+    this.cheerios.push(new Cheerio([16.35, 1.1, 15.15]));
+    this.cheerios.push(new Cheerio([13.97, 1.1, 16.58]));
+    this.cheerios.push(new Cheerio([11.22, 1.1, 16.58]));
+    this.cheerios.push(new Cheerio([9.22, 1.1, 16.58]));
+    this.cheerios.push(new Cheerio([6.10, 1.1, 16.58]));
+    this.cheerios.push(new Cheerio([3.64, 1.1, 16.57]));
+    this.cheerios.push(new Cheerio([3.48, 1.1, 13.47]));
+    this.cheerios.push(new Cheerio([3.32, 1.1, 10.44]));
+    this.cheerios.push(new Cheerio([3.09, 1.1, 6.11]));
 }
 
 GameManager.prototype.createTreeBillboards = function() {
-    this.trees.push(new TreeBillboard([35, 2.5, 6.1], textures[1]));
+    this.trees.push(new TreeBillboard([14.08, 2.5, 11.56], textures[1]));
+    this.trees.push(new TreeBillboard([4.41, 2.5, 5.52], textures[1]));
 }
 
 GameManager.prototype.createLights = function() {
@@ -510,12 +320,12 @@ GameManager.prototype.createLights = function() {
     this.lights.spotLights     = [];
     this.lights.directional.push(new DirectionalLight([1.0, -1.0, 0.0, 0.0], [0.4, 0.4, 0.4, 1.0], [0.3, 0.3, 0.3, 1.0], [0.3, 0.3, 0.3, 1.0], ON));
 
-    this.lights.pointLights.push(new PointLight([44.2, 2.0, 10.9, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([42.0, 2.0, 33.8, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([27.4, 2.0, 52.2, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([19.0, 2.0, 38.7, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([9.3 , 2.0, 22.2, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([25.2, 2.0, 9.9,  1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([19.50, 2.0, 17.68, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([8.46, 2.0, 5.10, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([15.03, 2.0, 11.20, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([6.99, 2.0, 16.87, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([46.55 , 2.0, 16.81, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([0.66, 2.0, 11.89,  1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
 
     this.lights.spotLights.push(new SpotLight(headLightLEFT,  headLightDirection, headLightAmbientComp, headLightDiffuseComp, headLightSpecularComp, headLightConstantAttenuation, headLightLinearAttenuation, headLightQuadraticAttenuation, headLightCutOff, headLightExponent, ON));
     this.lights.spotLights.push(new SpotLight(headLightRIGHT, headLightDirection, headLightAmbientComp, headLightDiffuseComp, headLightSpecularComp, headLightConstantAttenuation, headLightLinearAttenuation, headLightQuadraticAttenuation, headLightCutOff, headLightExponent, ON));
@@ -679,7 +489,7 @@ GameManager.prototype.restartGame = function() {
 }
 
 GameManager.prototype.restartCar = function () {
-    this.car.position = [28.7, 1.15, 6.1];
+    this.car.position = this.carDefaultPosition;
     this.car.direction = [1.0, 0.0, 0.0];
 
     this.car.acceleration = 0;

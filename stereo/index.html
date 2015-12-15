@@ -1,0 +1,268 @@
+<html>
+	<head>
+		<title>Micromachines</title>
+		
+		<script id="shader-vs" type="x-shader/x-vertex">
+			#version 100
+		    attribute vec3 VertexNormal;
+			attribute vec4 VertexPosition;
+			attribute vec4 texCoord;
+
+			attribute vec2 vVertex;
+			attribute vec2 vtexCoord;
+
+		    uniform mat4 m_pvm;
+			uniform mat4 m_viewModel;
+			uniform mat3 m_normal;
+			uniform bool vWritingMode;
+
+			varying vec3 Normal;
+			varying vec4 Position;
+			varying vec3 EyeDirection;
+			varying vec2 tex_coord;
+
+		    void main(void) {
+		        if (!vWritingMode) {
+					Normal = normalize(m_normal * VertexNormal);
+					Position = m_viewModel * VertexPosition;
+					EyeDirection = normalize(vec3(-Position));
+					gl_Position = m_pvm * VertexPosition;
+					tex_coord = texCoord.st;
+				}
+				else {
+					tex_coord = vtexCoord;
+					gl_Position = m_pvm * vec4(vVertex, 0.0, 1.0);
+				}	
+		    }
+		</script>
+
+		<script id="shader-fs" type="x-shader/x-fragment">
+		    precision mediump float;
+			struct MaterialProperties {
+				vec4 diffuse; 				// what part of diffuse light is scattered
+				vec4 ambient; 				// what part of ambient light is reflected
+				vec4 specular; 				// what part of specular light is scattered
+				vec4 emissive; 				// light produced by the material
+				float shininess;			// exponent for sharpening specular reflection
+				int texCount;
+			};
+
+			struct LightProperties {
+				bool isEnabled;				// true to apply this light in this invocation
+
+				bool isLocal;				// true for a point light or a spotlight,
+											// false for a positional light
+
+				bool isSpot;				// true if the light is a spotlight
+
+				vec4 ambient;				// light’s contribution to ambient light
+				vec4 diffuse;
+				vec4 specular;
+
+				vec3 position_point;
+				vec4 direction;
+				vec4 position;				// location of light, if is Local is true,
+											// otherwise the direction toward the light
+
+				vec3 halfVector;			// direction of highlights for directional light
+
+				float spotCosCutoff;
+				float spotExponent;
+
+				float constantAttenuation;	// local light attenuation coefficients
+				float linearAttenuation;
+				float quadraticAttenuation;
+			};
+
+			const int numberOfLights = 9;
+			uniform MaterialProperties mat;
+			uniform LightProperties lights[numberOfLights];
+			uniform bool useTextures;
+			uniform bool useLights;
+			uniform bool writingMode;
+			uniform bool particleMode;
+			uniform int texMode;
+			uniform bool sun;
+			uniform bool flare;
+
+			uniform vec3 overrideColor;
+
+			uniform bool fogIsEnabled;
+			uniform int fogMode;
+			uniform vec3 fogColor;
+			uniform float fogDensity;
+
+			uniform sampler2D texmap1;
+			uniform sampler2D texmap2;
+
+			varying vec3 Normal;
+			varying vec4 Position;
+			varying vec3 EyeDirection;
+			varying vec2 tex_coord;
+
+		    void main(void) {
+		    	if (!particleMode) {
+					if (!writingMode) {
+				    	vec3 scatteredLight = vec3(0.0); // or, to a global ambient light
+						vec3 reflectedLight = vec3(0.0);
+						vec4 texel, texel1;
+						texel = texture2D(texmap1, tex_coord);
+						texel1 = texture2D(texmap2, tex_coord);
+						vec4 tex = vec4(1.0);
+						if (useTextures) {
+							if (texMode == 2) {
+								tex = texel * texel1;
+							}
+							else if (texMode == 1) {
+								tex = texel;
+							}
+						}
+						for (int light = 0; light < numberOfLights; light++) {
+
+							if (! lights[light].isEnabled) 
+								continue;
+
+							vec3 halfVector;
+							vec3 lightDirection;
+							if (lights[light].isSpot) {
+								lightDirection  = vec3(lights[light].position);
+							}
+							else {
+								lightDirection = lights[light].position_point;
+							}
+							float attenuation = 1.0;
+
+							if (lights[light].isLocal) {
+								lightDirection = lightDirection - vec3(Position);
+								float lightDistance = length(lightDirection);
+								lightDirection = lightDirection / lightDistance;
+								attenuation = 1.0 /
+												(lights[light].constantAttenuation
+													+ lights[light].linearAttenuation * lightDistance
+													+ lights[light].quadraticAttenuation * lightDistance
+													* lightDistance);
+								if (lights[light].isSpot) {
+									float spotCos = dot(lightDirection, normalize(vec3(-lights[light].direction)));
+
+									if (spotCos < lights[light].spotCosCutoff) {
+										attenuation = 0.0;
+									}
+									else
+										attenuation *= pow(spotCos, lights[light].spotExponent);
+								}
+
+								halfVector = normalize(lightDirection + EyeDirection);
+							}
+							else {
+								lightDirection = normalize(vec3(-lights[light].direction));
+								halfVector = normalize(lightDirection + EyeDirection / 2.0);
+							}
+
+							float diffuse = max(0.0, dot(Normal, lightDirection));
+							float specular = max(0.0, dot(Normal, halfVector));
+							if (diffuse == 0.0)
+								specular = 0.0;
+							else
+							specular = pow(specular, mat.shininess);
+
+							// Accumulate all the lights’ effects
+							scatteredLight += lights[light].diffuse.rgb * mat.ambient.rgb * attenuation + lights[light].ambient.rgb * mat.diffuse.rgb * diffuse * attenuation;
+							reflectedLight += lights[light].ambient.rgb * mat.specular.rgb * specular * attenuation;
+
+						}
+						vec3 frag_rgb = overrideColor * min((mat.emissive.rgb + scatteredLight + reflectedLight)*tex.rgb, vec3(1.0));
+						if (fogIsEnabled) {
+							float dist = length(Position.xyz);
+							float fogAmount = 0.0;
+							if (fogMode == 0) {
+								fogAmount = (15.0 - dist)/(15.0 - 7.5);
+							}
+							else if (fogMode == 1) {
+								fogAmount = 1.0 / exp(dist * fogDensity);
+							}
+							else if (fogMode == 2) {
+								fogAmount = 1.0 / exp((dist * fogDensity) * (dist * fogDensity));
+							}
+							fogAmount = clamp(fogAmount, 0.0, 1.0);
+							frag_rgb =  mix(fogColor, frag_rgb, fogAmount);
+						}
+						gl_FragColor = vec4(frag_rgb, mat.diffuse.a*tex.a);
+
+						if (tex.a < 0.01)
+							discard;
+				    }
+				    else {
+						vec4 col = vec4(1,1,1,1);
+						gl_FragColor = texture2D(texmap1, tex_coord)*col;
+						if (gl_FragColor.rgb == vec3(0.0))
+							discard;
+					}
+				}
+				else {
+					if (sun) {
+						vec4 texel = texture2D(texmap1, tex_coord);
+						vec4 texel1 = texture2D(texmap2, tex_coord);
+						vec4 tex = texel * texel1;
+						gl_FragColor = tex * mat.diffuse;
+						if (gl_FragColor.a < 0.01)
+							discard;
+					}
+					else if (flare) {
+						gl_FragColor = texture2D(texmap1, tex_coord) * mat.diffuse;
+						if (gl_FragColor.a < 0.01)
+							discard;
+					}
+					else {
+						vec4 tex = texture2D(texmap1, tex_coord);
+						gl_FragColor = tex * mat.diffuse * 2.0;
+						if (tex.a == 0.0)
+							discard;
+					}
+				}
+		    }
+		</script>
+
+		<script type="text/javascript" src="js/libs/gl-matrix-min.js"></script>
+		<script type="text/javascript" src="js/libs/webgl-utils.js"></script>
+
+		<script type="text/javascript" src="js/primitives/cube.js"></script>
+		<script type="text/javascript" src="js/primitives/torus.js"></script>
+
+		<script type="text/javascript" src="js/math.js"></script>
+		<script type="text/javascript" src="js/shaderInit.js"></script>
+		<script type="text/javascript" src="js/cameras.js"></script>
+		<script type="text/javascript" src="js/gm.js"></script>
+		<script type="text/javascript" src="js/drawFuncs.js"></script>
+		<script type="text/javascript" src="js/lights.js"></script>
+		<script type="text/javascript" src="js/objects/car.js"></script>
+		<script type="text/javascript" src="js/objects/butter.js"></script>
+		<script type="text/javascript" src="js/objects/cheerio.js"></script>
+		<script type="text/javascript" src="js/objects/orange.js"></script>
+		<script type="text/javascript" src="js/objects/billboards.js"></script>
+		<script type="text/javascript" src="js/script.js"></script>
+		<style type="text/css">
+		    #loadingtext {
+		        position:absolute;
+		        top:250px;
+		        left:150px;
+		        font-size:2em;
+		        color: white;
+		    }
+		    html, body {
+		        margin: 0px;
+		        width: 100%;
+		        height: 100%;
+		        overflow: hidden;
+		      }
+		      /* make any canvas fill its container */
+		      canvas {
+		        width: 100%;
+		        height: 100%;
+		      }
+		</style>
+	</head>
+	<body onload="webGLStart();">
+		<canvas id="micromachines-canvas"></canvas>
+		<div id="loadingtext">Loading world...</div>
+	</body>
+</html>

@@ -77,13 +77,17 @@ Orange.prototype.updateAABBbox = function() {
 }
 
 Orange.prototype.checkInside = function(obj) {
-    if (this.position[0] > obj.XMax || this.position[0] < obj.XMin || this.position[2] > obj.ZMax || this.position[2] < obj.ZMin)
+    if (this.position[1] != 2000) {
+        if (this.position[0] > obj.XMax || this.position[0] < obj.XMin || this.position[2] > obj.ZMax || this.position[2] < obj.ZMin) {
         return false;
+    }
+    return true;
+    }
     return true;
 }
 
 Orange.prototype.resetOrangeInside = function(obj) {
-    var position = [generateRandomNumber(obj.XMin - 5, obj.XMax - 5), 2.0, generateRandomNumber(obj.ZMin - 5, obj.ZMax - 5)];
+    var position = [generateRandomNumber(obj.XMin + 5, obj.XMax - 5), 2.0, generateRandomNumber(obj.ZMin + 5, obj.ZMax - 5)];
     var speed =    [generateRandomNumber(-this.interval, this.interval)/2000, 0.0, generateRandomNumber(-this.interval, this.interval)/2000];
     while(Math.abs(speed[0]) < (this.interval/5000) && Math.abs(speed[2]) < (this.interval/5000)) {
         speed = [generateRandomNumber(-this.interval, this.interval)/2000, 0.0, generateRandomNumber(-this.interval, this.interval)/2000];
@@ -117,7 +121,7 @@ Orange.prototype.resetOrangeInside = function(obj) {
         direction[2] = 0;  
 
     var randomAppearTime = Math.floor((Math.random() * 3000) + 500);
-    this.position = [20, 2000, 20];
+    this.position = [19, 2000, 19];
     (function(obj, position, direction, speed) {
         setTimeout(function() {
             obj.position  = position;
@@ -128,7 +132,7 @@ Orange.prototype.resetOrangeInside = function(obj) {
 }
 
 Orange.prototype.generateRandomOrange = function(obj) {
-    var position = [generateRandomNumber(obj.XMin - 5, obj.XMax - 5), 2.0, generateRandomNumber(obj.ZMin - 5, obj.ZMax - 5)];
+    var position = [generateRandomNumber(obj.XMin + 5, obj.XMax - 5), 2.0, generateRandomNumber(obj.ZMin + 5, obj.ZMax - 5)];
     var speed    = [generateRandomNumber(-this.interval, this.interval)/2000, 0.0, generateRandomNumber(-this.interval, this.interval)/2000];
     while(Math.abs(speed[0]) < (this.interval/5000) && Math.abs(speed[2]) < (this.interval/5000)) {
         speed = [generateRandomNumber(-this.interval, this.interval)/2000, 0.0, generateRandomNumber(-this.interval, this.interval)/2000];
