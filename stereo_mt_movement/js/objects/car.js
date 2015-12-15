@@ -5,7 +5,7 @@ function Car(position, direction) {
 	this.acceleration = 0;
 	this.speed = 0;
 	this.speedVec3 = [0, 0, 0];
-	this.acceleration_factor = 0.00001;
+	this.acceleration_factor = 0.000035;
 	this.acceleration_input = 0;
 	this.carAngle = 0;
 	this.wheel_angle = 0;
@@ -13,7 +13,7 @@ function Car(position, direction) {
 	this.steer_input = 0;
 	this.steer_factor = Math.PI/4;
 	this.current_speed = 0;
-	this.max_speed = 0.06;
+	this.max_speed = 0.03;
 	this.backwards_friction_factor = 0.004;
 	this.backwards_friction = 0;
 	this.lastPosition = position.slice();

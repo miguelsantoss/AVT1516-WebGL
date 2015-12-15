@@ -315,13 +315,8 @@ GameManager.prototype.createTreeBillboards = function() {
 }
 
 GameManager.prototype.createLights = function() {
-    var candleAmbientComp     = [1.00, 0.57, 0.16, 1.00];
-    var candleDiffuseComp     = [1.00, 1.00, 1.00, 1.00];
-    var candleSpecularComp    = [1.00, 1.00, 1.00, 1.00];
-
-    var headLightAmbientComp  = [0.78, 0.88, 1.00, 1.00];
-    var headLightDiffuseComp  = [1.00, 1.00, 1.00, 1.00];
-    var headLightSpecularComp = [1.00, 1.00, 1.00, 1.00];
+    var candleColor      = [1.00, 0.57, 0.16];
+    var headLightColor   = [0.78, 0.88, 1.00];
 
 
     var candleConstantAttenuation     = 0.05;
@@ -344,139 +339,68 @@ GameManager.prototype.createLights = function() {
     this.lights.directional    = [];
     this.lights.pointLights    = [];
     this.lights.spotLights     = [];
-    this.lights.directional.push(new DirectionalLight([1.0, -1.0, 0.0, 0.0], [0.4, 0.4, 0.4, 1.0], [0.3, 0.3, 0.3, 1.0], [0.3, 0.3, 0.3, 1.0], ON));
+    this.lights.directional.push(new DirectionalLight([1.0, -1.0, 0.0, 0.0], [0.4, 0.4, 0.4], ON));
 
-    this.lights.pointLights.push(new PointLight([19.50, 2.0, 17.68, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([8.46, 2.0, 5.10, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([15.03, 2.0, 11.20, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([6.99, 2.0, 16.87, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([46.55 , 2.0, 16.81, 1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
-    this.lights.pointLights.push(new PointLight([0.66, 2.0, 11.89,  1.0], candleAmbientComp, candleDiffuseComp, candleSpecularComp, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([19.50, 2.0, 17.68, 1.0], candleColor, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([8.46, 2.0, 5.10, 1.0], candleColor, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([15.03, 2.0, 11.20, 1.0], candleColor, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([6.99, 2.0, 16.87, 1.0], candleColor, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([46.55 , 2.0, 16.81, 1.0], candleColor, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
+    this.lights.pointLights.push(new PointLight([0.66, 2.0, 11.89,  1.0], candleColor, candleConstantAttenuation, candleLinearAttenuation, candleQuadraticAttenuation, OFF));
 
-    this.lights.spotLights.push(new SpotLight(headLightLEFT,  headLightDirection, headLightAmbientComp, headLightDiffuseComp, headLightSpecularComp, headLightConstantAttenuation, headLightLinearAttenuation, headLightQuadraticAttenuation, headLightCutOff, headLightExponent, ON));
-    this.lights.spotLights.push(new SpotLight(headLightRIGHT, headLightDirection, headLightAmbientComp, headLightDiffuseComp, headLightSpecularComp, headLightConstantAttenuation, headLightLinearAttenuation, headLightQuadraticAttenuation, headLightCutOff, headLightExponent, ON));
+    this.lights.spotLights.push(new SpotLight(headLightLEFT,  headLightDirection, headLightColor, headLightConstantAttenuation, headLightLinearAttenuation, headLightQuadraticAttenuation, headLightCutOff, headLightExponent, ON));
+    this.lights.spotLights.push(new SpotLight(headLightRIGHT, headLightDirection, headLightColor, headLightConstantAttenuation, headLightLinearAttenuation, headLightQuadraticAttenuation, headLightCutOff, headLightExponent, ON));
 }
 
 GameManager.prototype.setUpLightsUniforms = function() {
     var aux4 = [], aux3 = [];
     multMatrixPoint(viewMatrix, this.lights.directional[0].direction, aux4);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[0].direction"),            aux4);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[0].ambient"),              this.lights.directional[0].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[0].diffuse"),              this.lights.directional[0].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[0].specular"),             this.lights.directional[0].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[0].isEnabled"),            this.lights.directional[0].isEnabled);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[0].isLocal"),              this.lights.directional[0].isLocal);
+    
+    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights2[0].position"),            aux4);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[0].isEnabled"),            this.lights.directional[0].isEnabled);
+
 
     multMatrixPoint(viewMatrix, this.lights.pointLights[0].position, aux4);
     aux3 = [aux4[0], aux4[1], aux4[2]];
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights[1].position_point"),       aux3);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[1].ambient"),              this.lights.pointLights[0].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[1].diffuse"),              this.lights.pointLights[0].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[1].specular"),             this.lights.pointLights[0].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[1].isLocal"),              this.lights.pointLights[0].isLocal);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[1].isSpot"),               this.lights.pointLights[0].isSpot);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[1].isEnabled"),            this.lights.pointLights[0].isEnabled);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[1].constantAttenuation"),  this.lights.pointLights[0].constantAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[1].linearAttenuation"),    this.lights.pointLights[0].linearAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[1].quadraticAttenuation"), this.lights.pointLights[0].quadraticAttenuation);
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights2[1].position_point"),       aux3);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[1].isEnabled"),            this.lights.pointLights[0].isEnabled);
 
     multMatrixPoint(viewMatrix, this.lights.pointLights[1].position, aux4);
     aux3 = [aux4[0], aux4[1], aux4[2]];
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights[2].position_point"),       aux3);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[2].ambient"),              this.lights.pointLights[1].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[2].diffuse"),              this.lights.pointLights[1].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[2].specular"),             this.lights.pointLights[1].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[2].isLocal"),              this.lights.pointLights[1].isLocal);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[2].isSpot"),               this.lights.pointLights[1].isSpot);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[2].isEnabled"),            this.lights.pointLights[1].isEnabled);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[2].constantAttenuation"),  this.lights.pointLights[1].constantAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[2].linearAttenuation"),    this.lights.pointLights[1].linearAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[2].quadraticAttenuation"), this.lights.pointLights[1].quadraticAttenuation);
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights2[2].position_point"),       aux3);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[2].isEnabled"),            this.lights.pointLights[1].isEnabled);
 
     multMatrixPoint(viewMatrix, this.lights.pointLights[2].position, aux4);
     aux3 = [aux4[0], aux4[1], aux4[2]];
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights[3].position_point"),       aux3);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[3].ambient"),              this.lights.pointLights[2].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[3].diffuse"),              this.lights.pointLights[2].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[3].specular"),             this.lights.pointLights[2].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[3].isLocal"),              this.lights.pointLights[2].isLocal);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[3].isSpot"),               this.lights.pointLights[2].isSpot);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[3].isEnabled"),            this.lights.pointLights[2].isEnabled);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[3].constantAttenuation"),  this.lights.pointLights[2].constantAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[3].linearAttenuation"),    this.lights.pointLights[2].linearAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[3].quadraticAttenuation"), this.lights.pointLights[2].quadraticAttenuation);
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights2[3].position_point"),       aux3);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[3].isEnabled"),            this.lights.pointLights[2].isEnabled);
 
     multMatrixPoint(viewMatrix, this.lights.pointLights[3].position, aux4);
     aux3 = [aux4[0], aux4[1], aux4[2]];
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights[4].position_point"),       aux3);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[4].ambient"),              this.lights.pointLights[3].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[4].diffuse"),              this.lights.pointLights[3].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[4].specular"),             this.lights.pointLights[3].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[4].isLocal"),              this.lights.pointLights[3].isLocal);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[4].isSpot"),               this.lights.pointLights[3].isSpot);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[4].isEnabled"),            this.lights.pointLights[3].isEnabled);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[4].constantAttenuation"),  this.lights.pointLights[3].constantAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[4].linearAttenuation"),    this.lights.pointLights[3].linearAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[4].quadraticAttenuation"), this.lights.pointLights[3].quadraticAttenuation);
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights2[4].position_point"),       aux3);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[4].isEnabled"),            this.lights.pointLights[3].isEnabled);
 
     multMatrixPoint(viewMatrix, this.lights.pointLights[4].position, aux4);
     aux3 = [aux4[0], aux4[1], aux4[2]];
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights[5].position_point"),       aux3);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[5].ambient"),              this.lights.pointLights[4].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[5].diffuse"),              this.lights.pointLights[4].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[5].specular"),             this.lights.pointLights[4].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[5].isLocal"),              this.lights.pointLights[4].isLocal);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[5].isSpot"),               this.lights.pointLights[4].isSpot);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[5].isEnabled"),            this.lights.pointLights[4].isEnabled);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[5].constantAttenuation"),  this.lights.pointLights[4].constantAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[5].linearAttenuation"),    this.lights.pointLights[4].linearAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[5].quadraticAttenuation"), this.lights.pointLights[4].quadraticAttenuation);
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights2[5].position_point"),       aux3);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[5].isEnabled"),            this.lights.pointLights[4].isEnabled);
 
     multMatrixPoint(viewMatrix, this.lights.pointLights[5].position, aux4);
     aux3 = [aux4[0], aux4[1], aux4[2]];
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights[6].position_point"),       aux3);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[6].ambient"),              this.lights.pointLights[5].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[6].diffuse"),              this.lights.pointLights[5].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[6].specular"),             this.lights.pointLights[5].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[6].isLocal"),              this.lights.pointLights[5].isLocal);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[6].isSpot"),               this.lights.pointLights[5].isSpot);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[6].isEnabled"),            this.lights.pointLights[5].isEnabled);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[6].constantAttenuation"),  this.lights.pointLights[5].constantAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[6].linearAttenuation"),    this.lights.pointLights[5].linearAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[6].quadraticAttenuation"), this.lights.pointLights[5].quadraticAttenuation);
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "lights2[6].position_point"),       aux3);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[6].isEnabled"),            this.lights.pointLights[5].isEnabled);
 
     multMatrixPoint(viewMatrix, this.lights.spotLights[0].position, aux4);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[7].position"),             aux4);
-
+    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights2[7].position"),             aux4);
     multMatrixPoint(viewMatrix, this.lights.spotLights[0].direction, aux4);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[7].direction"),            aux4);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[7].ambient"),              this.lights.spotLights[0].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[7].diffuse"),              this.lights.spotLights[0].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[7].specular"),             this.lights.spotLights[0].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[7].isLocal"),              this.lights.spotLights[0].isLocal);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[7].isSpot"),               this.lights.spotLights[0].isSpot);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[7].isEnabled"),            this.lights.spotLights[0].isEnabled);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[7].constantAttenuation"),  this.lights.spotLights[0].constantAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[7].linearAttenuation"),    this.lights.spotLights[0].linearAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[7].quadraticAttenuation"), this.lights.spotLights[0].quadraticAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[7].spotCosCutoff"),        this.lights.spotLights[0].cutOff);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[7].spotExponent"),         this.lights.spotLights[0].exponent);
+    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "headlightsDirection1"),            aux4);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[7].isEnabled"),            this.lights.spotLights[0].isEnabled);
 
     multMatrixPoint(viewMatrix, this.lights.spotLights[1].position, aux4);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[8].position"),             aux4);
+    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights2[8].position"),             aux4);
     multMatrixPoint(viewMatrix, this.lights.spotLights[1].direction, aux4);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[8].direction"),            aux4);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[8].ambient"),              this.lights.spotLights[1].ambient);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[8].diffuse"),              this.lights.spotLights[1].diffuse);
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights[8].specular"),             this.lights.spotLights[1].specular);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[8].isLocal"),              this.lights.spotLights[1].isLocal);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[8].isSpot"),               this.lights.spotLights[1].isSpot);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights[8].isEnabled"),            this.lights.spotLights[1].isEnabled);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[8].constantAttenuation"),  this.lights.spotLights[1].constantAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[8].linearAttenuation"),    this.lights.spotLights[1].linearAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[8].quadraticAttenuation"), this.lights.spotLights[1].quadraticAttenuation);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[8].spotCosCutoff"),        this.lights.spotLights[1].cutOff);
-    gl.uniform1f(gl.getUniformLocation(shaderProgram,  "lights[8].spotExponent"),         this.lights.spotLights[1].exponent);
+    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "headlightsDirection2"),            aux4);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[8].isEnabled"),            this.lights.spotLights[1].isEnabled);
 }
 
 GameManager.prototype.updateHeadLights = function() {

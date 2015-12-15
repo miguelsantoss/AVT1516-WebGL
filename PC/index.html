@@ -42,7 +42,6 @@
 				vec4 diffuse; 				// what part of diffuse light is scattered
 				vec4 ambient; 				// what part of ambient light is reflected
 				vec4 specular; 				// what part of specular light is scattered
-				vec4 emissive; 				// light produced by the material
 				float shininess;			// exponent for sharpening specular reflection
 				int texCount;
 			};
@@ -55,17 +54,12 @@
 
 				bool isSpot;				// true if the light is a spotlight
 
-				vec4 ambient;				// light’s contribution to ambient light
-				vec4 diffuse;
-				vec4 specular;
+				vec3 color;
 
 				vec3 position_point;
 				vec4 direction;
 				vec4 position;				// location of light, if is Local is true,
 											// otherwise the direction toward the light
-
-				vec3 halfVector;			// direction of highlights for directional light
-
 				float spotCosCutoff;
 				float spotExponent;
 
@@ -78,12 +72,8 @@
 			uniform MaterialProperties mat;
 			uniform LightProperties lights[numberOfLights];
 			uniform bool useTextures;
-			uniform bool useLights;
 			uniform bool writingMode;
-			uniform bool particleMode;
 			uniform int texMode;
-			uniform bool sun;
-			uniform bool flare;
 
 			uniform vec3 overrideColor;
 
@@ -101,27 +91,24 @@
 			varying vec2 tex_coord;
 
 		    void main(void) {
-		    	if (!particleMode) {
-					if (!writingMode) {
-				    	vec3 scatteredLight = vec3(0.0); // or, to a global ambient light
-						vec3 reflectedLight = vec3(0.0);
-						vec4 texel, texel1;
-						texel = texture2D(texmap1, tex_coord);
-						texel1 = texture2D(texmap2, tex_coord);
-						vec4 tex = vec4(1.0);
-						if (useTextures) {
-							if (texMode == 2) {
-								tex = texel * texel1;
-							}
-							else if (texMode == 1) {
-								tex = texel;
-							}
+				if (!writingMode) {
+			    	vec3 scatteredLight = vec3(0.0); // or, to a global ambient light
+					vec3 reflectedLight = vec3(0.0);
+					vec4 texel, texel1;
+					texel = texture2D(texmap1, tex_coord);
+					texel1 = texture2D(texmap2, tex_coord);
+					vec4 tex = vec4(1.0);
+					if (useTextures) {
+						if (texMode == 2) {
+							tex = texel * texel1;
 						}
-						for (int light = 0; light < numberOfLights; light++) {
+						else if (texMode == 1) {
+							tex = texel;
+						}
+					}
+					for (int light = 0; light < numberOfLights; light++) {
 
-							if (! lights[light].isEnabled) 
-								continue;
-
+						if (lights[light].isEnabled) {
 							vec3 halfVector;
 							vec3 lightDirection;
 							if (lights[light].isSpot) {
@@ -166,58 +153,36 @@
 							specular = pow(specular, mat.shininess);
 
 							// Accumulate all the lights’ effects
-							scatteredLight += lights[light].diffuse.rgb * mat.ambient.rgb * attenuation + lights[light].ambient.rgb * mat.diffuse.rgb * diffuse * attenuation;
-							reflectedLight += lights[light].ambient.rgb * mat.specular.rgb * specular * attenuation;
-
+							scatteredLight += lights[light].color * mat.ambient.rgb * attenuation + lights[light].color * mat.diffuse.rgb * diffuse * attenuation;
+							reflectedLight += lights[light].color * mat.specular.rgb * specular * attenuation;
 						}
-						vec3 frag_rgb = overrideColor * min((mat.emissive.rgb + scatteredLight + reflectedLight)*tex.rgb, vec3(1.0));
-						if (fogIsEnabled) {
-							float dist = length(Position.xyz);
-							float fogAmount = 0.0;
-							if (fogMode == 0) {
-								fogAmount = (15.0 - dist)/(15.0 - 7.5);
-							}
-							else if (fogMode == 1) {
-								fogAmount = 1.0 / exp(dist * fogDensity);
-							}
-							else if (fogMode == 2) {
-								fogAmount = 1.0 / exp((dist * fogDensity) * (dist * fogDensity));
-							}
-							fogAmount = clamp(fogAmount, 0.0, 1.0);
-							frag_rgb =  mix(fogColor, frag_rgb, fogAmount);
+					}
+					vec3 frag_rgb = min((scatteredLight + reflectedLight)*tex.rgb, vec3(1.0));
+					if (fogIsEnabled) {
+						float dist = length(Position.xyz);
+						float fogAmount = 0.0;
+						if (fogMode == 0) {
+							fogAmount = (15.0 - dist)/(15.0 - 7.5);
 						}
-						gl_FragColor = vec4(frag_rgb, mat.diffuse.a*tex.a);
+						else if (fogMode == 1) {
+							fogAmount = 1.0 / exp(dist * fogDensity);
+						}
+						else if (fogMode == 2) {
+							fogAmount = 1.0 / exp((dist * fogDensity) * (dist * fogDensity));
+						}
+						fogAmount = clamp(fogAmount, 0.0, 1.0);
+						frag_rgb =  mix(fogColor, frag_rgb, fogAmount);
+					}
+					gl_FragColor = vec4(frag_rgb, mat.diffuse.a*tex.a);
 
-						if (tex.a < 0.01)
-							discard;
-				    }
-				    else {
-						vec4 col = vec4(1,1,1,1);
-						gl_FragColor = texture2D(texmap1, tex_coord)*col;
-						if (gl_FragColor.rgb == vec3(0.0))
-							discard;
-					}
-				}
-				else {
-					if (sun) {
-						vec4 texel = texture2D(texmap1, tex_coord);
-						vec4 texel1 = texture2D(texmap2, tex_coord);
-						vec4 tex = texel * texel1;
-						gl_FragColor = tex * mat.diffuse;
-						if (gl_FragColor.a < 0.01)
-							discard;
-					}
-					else if (flare) {
-						gl_FragColor = texture2D(texmap1, tex_coord) * mat.diffuse;
-						if (gl_FragColor.a < 0.01)
-							discard;
-					}
-					else {
-						vec4 tex = texture2D(texmap1, tex_coord);
-						gl_FragColor = tex * mat.diffuse * 2.0;
-						if (tex.a == 0.0)
-							discard;
-					}
+					if (tex.a < 0.01)
+						discard;
+			    }
+			    else {
+					vec4 col = vec4(1,1,1,1);
+					gl_FragColor = texture2D(texmap1, tex_coord)*col;
+					if (gl_FragColor.rgb == vec3(0.0))
+						discard;
 				}
 		    }
 		</script>

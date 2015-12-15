@@ -258,24 +258,24 @@ function animate() {
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
             var elapsed = timeNow - lastTime;
-            if(gameManager.car.position[0] > 14.5 && gameManager.car.position[2] < 2 && gameManager.car.direction[0] > 0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
+            if(gameManager.car.position[0] > 13.5 && gameManager.car.position[2] < 2 && gameManager.car.direction[0] > 0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
                 currentlyPressedKeys[80] = true;
-            if(gameManager.car.position[0] > 15.5 && gameManager.car.position[2] > 3.6 && gameManager.car.position[2] < 10 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] > 0.8)
+            if(gameManager.car.position[0] > 15.5 && gameManager.car.position[2] > 7 && gameManager.car.position[2] < 10 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] > 0.8)
                 currentlyPressedKeys[80] = false;
 
-            if(gameManager.car.position[0] > 15.5 && gameManager.car.position[2] > 15.5 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] > 0.8)
+            if(gameManager.car.position[0] > 15.5 && gameManager.car.position[2] > 13.0 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] > 0.8)
                 currentlyPressedKeys[80] = true;
-            if(gameManager.car.position[0] < 15.8 && gameManager.car.position[2] > 15.5 && gameManager.car.direction[0] < -0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
+            if(gameManager.car.position[0] < 16.0 && gameManager.car.position[2] > 13.5 && gameManager.car.direction[0] < -0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
                 currentlyPressedKeys[80] = false;
 
-            if(gameManager.car.position[0] < 4.5 && gameManager.car.position[2] > 15.5 && gameManager.car.direction[0] < -0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
+            if(gameManager.car.position[0] < 7.0 && gameManager.car.position[2] > 15.5 && gameManager.car.direction[0] < -0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
                 currentlyPressedKeys[80] = true;
-            if(gameManager.car.position[0] < 4 && gameManager.car.position[2] < 15.8 && gameManager.car.position[2] > 12.5 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] < -0.8)
+            if(gameManager.car.position[0] < 7 && gameManager.car.position[2] < 13.8 && gameManager.car.position[2] > 12.5 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] < -0.8)
                 currentlyPressedKeys[80] = false;
 
-            if(gameManager.car.position[0] < 2.5 && gameManager.car.position[2] < 4.5 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] < -0.8)
+            if(gameManager.car.position[0] < 4.5 && gameManager.car.position[2] < 7.0 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] < -0.8)
                 currentlyPressedKeys[80] = true;
-            if(gameManager.car.position[0] > 4.2 && gameManager.car.position[0] < 10 && gameManager.car.position[2] < 10.8 && gameManager.car.direction[0] > 0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
+            if(gameManager.car.position[0] > 6.2 && gameManager.car.position[0] < 10 && gameManager.car.position[2] < 10.8 && gameManager.car.direction[0] > 0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
                 currentlyPressedKeys[80] = false;
             gameManager.update(elapsed);
         }
