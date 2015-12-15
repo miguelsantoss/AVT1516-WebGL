@@ -77,6 +77,7 @@ GameManager.prototype.draw = function() {
         this.trees[i].draw();
     }
     this.car.draw();
+    console.log(gameManager.car.position);
 }
 
 GameManager.prototype.update = function(delta_t) {

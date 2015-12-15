@@ -1,7 +1,7 @@
 function GameManager(width, height) {
 	this.width          = width;
 	this.height         = height;
-    this.lives          = 5;
+    this.lives          = 50;
     this.gameOver       = false;
     this.pause          = false;
 
@@ -474,6 +474,7 @@ GameManager.prototype.restartGame = function() {
     this.gameOver = false;
     totalTime = 0;
     this.lives = 5;
+    currentlyPressedKeys[80] = false;
     this.restartCar();
     this.lights.directional[0].isEnabled = ON;
     this.lights.pointLights[0].isEnabled = OFF;
@@ -491,6 +492,7 @@ GameManager.prototype.restartGame = function() {
 
 GameManager.prototype.restartCar = function () {
     totalTime = 0;
+    currentlyPressedKeys[80] = false;
     this.car.position = this.carDefaultPosition;
     this.car.direction = [1.0, 0.0, 0.0];
 

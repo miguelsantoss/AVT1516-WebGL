@@ -253,66 +253,30 @@ var totalTime = 0;
 var randomStuff = 0;
 var turnSomethingOn = 0;
 
+
 function animate() {
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
             var elapsed = timeNow - lastTime;
-            totalTime+=elapsed;
-            if (totalTime > 1900 && totalTime < 2400)
+            if(gameManager.car.position[0] > 15.5 && gameManager.car.position[2] < 2 && gameManager.car.direction[0] > 0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
                 currentlyPressedKeys[80] = true;
-            if (totalTime > 2400 && totalTime < 3670)
+            if(gameManager.car.position[0] > 15.5 && gameManager.car.position[2] > 3.6 && gameManager.car.position[2] < 10 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] > 0.8)
                 currentlyPressedKeys[80] = false;
 
-            if (totalTime > 3670 && totalTime < 4170)
+            if(gameManager.car.position[0] > 15.5 && gameManager.car.position[2] > 15.5 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] > 0.8)
                 currentlyPressedKeys[80] = true;
-            if (totalTime > 4170 && totalTime < 5000)
+            if(gameManager.car.position[0] < 15.8 && gameManager.car.position[2] > 15.5 && gameManager.car.direction[0] < -0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
                 currentlyPressedKeys[80] = false;
 
-            if (totalTime > 5450 && totalTime < 5955)
+            if(gameManager.car.position[0] < 4.5 && gameManager.car.position[2] > 15.5 && gameManager.car.direction[0] < -0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
                 currentlyPressedKeys[80] = true;
-            if (totalTime > 5955 && totalTime < 6500)
+            if(gameManager.car.position[0] < 4 && gameManager.car.position[2] < 15.8 && gameManager.car.position[2] > 12.5 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] < -0.8)
                 currentlyPressedKeys[80] = false;
 
-            if (totalTime > 7150 && totalTime < 7650)
+            if(gameManager.car.position[0] < 2.5 && gameManager.car.position[2] < 4.5 && Math.abs(gameManager.car.direction[0]) < 0.2 && gameManager.car.direction[2] < -0.8)
                 currentlyPressedKeys[80] = true;
-            if (totalTime > 7650) {
+            if(gameManager.car.position[0] > 4.2 && gameManager.car.position[0] < 10 && gameManager.car.position[2] < 10.8 && gameManager.car.direction[0] > 0.8 && Math.abs(gameManager.car.direction[2]) < 0.2)
                 currentlyPressedKeys[80] = false;
-                totalTime = 500;
-            }
-            turnSomethingOn = Math.random();
-            randomStuff = Math.random();
-            if (turnSomethingOn > 0.9) {
-                if (randomStuff > 0.0 && randomStuff < 0.1) {
-                    gameManager.lights.directional[0].isEnabled = !gameManager.lights.directional[0].isEnabled;
-                    gameManager.day = !gameManager.day;
-                }
-                else if (randomStuff > 0.1 && randomStuff < 0.2) {
-                    gameManager.lights.pointLights[0].isEnabled = !gameManager.lights.pointLights[0].isEnabled;
-                    gameManager.lights.pointLights[1].isEnabled = !gameManager.lights.pointLights[1].isEnabled;
-                    gameManager.lights.pointLights[2].isEnabled = !gameManager.lights.pointLights[2].isEnabled;
-                    gameManager.lights.pointLights[3].isEnabled = !gameManager.lights.pointLights[3].isEnabled;
-                    gameManager.lights.pointLights[4].isEnabled = !gameManager.lights.pointLights[4].isEnabled;
-                    gameManager.lights.pointLights[5].isEnabled = !gameManager.lights.pointLights[5].isEnabled;
-                }
-                else if (randomStuff > 0.2 && randomStuff < 0.3) {
-                    gameManager.lights.spotLights[0].isEnabled = !gameManager.lights.spotLights[0].isEnabled;
-                    gameManager.lights.spotLights[1].isEnabled = !gameManager.lights.spotLights[1].isEnabled;
-                }
-                else if (randomStuff > 0.3 && randomStuff < 0.4) {
-                    gameManager.fog.state = !gameManager.fog.state;
-                }
-                else if (randomStuff > 0.4 && randomStuff < 0.5) {
-                    gameManager.fog.mode = 0;
-                }
-                else if (randomStuff > 0.5 && randomStuff < 0.6) {
-                    gameManager.fog.mode = 1;
-                }
-                else if (randomStuff > 0.6 && randomStuff < 0.7) {
-                    gameManager.fog.mode = 2;
-                }
-            }
-
-
             gameManager.update(elapsed);
         }
     lastTime = timeNow;
@@ -349,12 +313,12 @@ function webGLStart() {
 var currentlyPressedKeys = {};
 
 function handleKeyDown(event) {
-    // currentlyPressedKeys[event.keyCode] = true;
+     // currentlyPressedKeys[event.keyCode] = true;
 }
 
 
 function handleKeyUp(event) {
-    // currentlyPressedKeys[event.keyCode] = false;
+     // currentlyPressedKeys[event.keyCode] = false;
 }
 
 function handleKeys() {
