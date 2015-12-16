@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>Micromachines</title>
-		
+
 		<script id="shader-vs" type="x-shader/x-vertex">
 			#version 100
 		    attribute vec3 VertexNormal;
@@ -32,7 +32,7 @@
 				else {
 					tex_coord = vtexCoord;
 					gl_Position = m_pvm * vec4(vVertex, 0.0, 1.0);
-				}	
+				}
 		    }
 		</script>
 
@@ -79,7 +79,7 @@
 			uniform vec4 headlightsDirection1;
 			uniform bool useTextures;
 			uniform int texMode;
-			
+
 			uniform sampler2D texmap1;
 			uniform sampler2D texmap2;
 
@@ -199,12 +199,13 @@
 
 				if (tex.a < 0.01)
 					discard;
-				
+
 		    }
 		</script>
 
 		<script type="text/javascript" src="js/libs/gl-matrix-min.js"></script>
 		<script type="text/javascript" src="js/libs/webgl-utils.js"></script>
+		<script type="text/javascript" src="js/libs/gyro.js"></script>
 
 		<script type="text/javascript" src="js/primitives/cube.js"></script>
 		<script type="text/javascript" src="js/primitives/torus.js"></script>

@@ -16,6 +16,9 @@ function GameManager(width, height) {
     this.fog.mode       = 1;
     this.day            = true;
 
+    this.alpha = 0;
+    this.beta = 0;
+    this.gama = 0;
 
     this.createCameras();
     this.createObjects();
@@ -55,6 +58,8 @@ GameManager.prototype.draw = function(){
         mat4.identity(viewMatrix);
         gl.viewport(0, 0, gl.viewportWidth/2, gl.viewportHeight);
             this.cameras[2].computeLeftProjection();
+            mat4.rotateY(projectionMatrix, projectionMatrix, -this.alpha);
+            mat4.rotateX(projectionMatrix, projectionMatrix, this.beta);
             this.drawObjects();
 
         //right
@@ -63,6 +68,8 @@ GameManager.prototype.draw = function(){
         mat4.identity(viewMatrix);
         gl.viewport(gl.viewportWidth/2, 0, gl.viewportWidth/2, gl.viewportHeight);
             this.cameras[2].computeRightProjection();
+            mat4.rotateY(projectionMatrix, projectionMatrix, -this.alpha);
+            mat4.rotateX(projectionMatrix, projectionMatrix, this.beta);
             this.drawObjects();
 }
 

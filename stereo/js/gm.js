@@ -22,6 +22,10 @@ function GameManager(width, height) {
     this.createLights();
 
 	this.matrices = new MatrixStack();
+
+	this.alpha = 0;
+	this.beta = 0;
+	this.gama = 0;
     // gl.depthFunc(gl.LESS);
 }
 
@@ -55,6 +59,9 @@ GameManager.prototype.draw = function(){
         mat4.identity(viewMatrix);
         gl.viewport(0, 0, gl.viewportWidth/2, gl.viewportHeight);
             this.cameras[2].computeLeftProjection();
+						mat4.rotateY(projectionMatrix, projectionMatrix, -this.alpha);
+						mat4.rotateX(projectionMatrix, projectionMatrix, this.beta);
+						//mat4.rotateZ(projectionMatrix, projectionMatrix, -this.gamma);
             this.drawObjects();
 
         //right
@@ -63,6 +70,8 @@ GameManager.prototype.draw = function(){
         mat4.identity(viewMatrix);
         gl.viewport(gl.viewportWidth/2, 0, gl.viewportWidth/2, gl.viewportHeight);
             this.cameras[2].computeRightProjection();
+						mat4.rotateY(projectionMatrix, projectionMatrix, -this.alpha);
+						mat4.rotateX(projectionMatrix, projectionMatrix, this.beta);
             this.drawObjects();
 }
 
@@ -143,7 +152,6 @@ GameManager.prototype.update = function(delta_t) {
         }
         this.cheerios[i].update(delta_t);
     }
-
 
 }
 
@@ -355,7 +363,7 @@ GameManager.prototype.createLights = function() {
 GameManager.prototype.setUpLightsUniforms = function() {
     var aux4 = [], aux3 = [];
     multMatrixPoint(viewMatrix, this.lights.directional[0].direction, aux4);
-    
+
     gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lights2[0].position"),            aux4);
     gl.uniform1i(gl.getUniformLocation(shaderProgram,  "lights2[0].isEnabled"),            this.lights.directional[0].isEnabled);
 

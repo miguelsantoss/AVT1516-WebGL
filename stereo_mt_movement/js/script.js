@@ -31,6 +31,17 @@ function resize(canvas) {
   }
 }
 
+function updateSensors() {
+      gyro.frequency = 30;
+            gyro.startTracking(function(o) {
+                gameManager.alpha = o.alpha ? degToRad(o.alpha) : 0;
+                gameManager.beta = o.beta ? degToRad(o.beta) : 0;
+                gameManager.gamma = o.gamma ? degToRad(o.gamma) : 0;
+                // o.x, o.y, o.z for accelerometer
+                // o.alpha, o.beta, o.gamma for gyro
+            });
+}
+
 function initBuffers() {
     //cube buffers inicialization
     cube.VertexPositionBuffer = gl.createBuffer();
@@ -304,6 +315,7 @@ function webGLStart() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
 
+    updateSensors();
     document.onkeydown = handleKeyDown;
     document.onkeyup   = handleKeyUp;
     currentlyPressedKeys[81] = true;
