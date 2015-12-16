@@ -5,7 +5,7 @@ function Car(position, direction) {
 	this.acceleration = 0;
 	this.speed = 0;
 	this.speedVec3 = [0, 0, 0];
-	this.acceleration_factor = 0.000001;
+	this.acceleration_factor = 0.000035;
 	this.acceleration_input = 0;
 	this.carAngle = 0;
 	this.wheel_angle = 0;

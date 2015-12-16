@@ -60,6 +60,12 @@ function initShaders() {
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "texCoord");
     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
 
+    shaderProgram.vertexPositionAttribute2 = gl.getAttribLocation(shaderProgram, "vVertex");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
+    shaderProgram.textureCoordAttribute2 = gl.getAttribLocation(shaderProgram, "vtexCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
     shaderProgram.pvm_uniformId = gl.getUniformLocation(shaderProgram, "m_pvm");
     shaderProgram.vm_uniformId = gl.getUniformLocation(shaderProgram, "m_viewModel");
     shaderProgram.normal_uniformId = gl.getUniformLocation(shaderProgram, "m_normal");

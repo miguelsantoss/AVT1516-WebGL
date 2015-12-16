@@ -1,19 +1,23 @@
 var gl, gameManager;
+var ctx;
 var cube = {}, torus = {}, quad = {}, sphere = {};
 
-function initGL(canvas) {
+
+function initGL(canvas, over) {
     try {
         gl = canvas.getContext("experimental-webgl");
         gl.viewportWidth  = canvas.width;
         gl.viewportHeight = canvas.height;
+        ctx = over.getContext("2d");
     } catch (e) {
+        alert(e);
     }
     if (!gl) {
         alert("Could not initialise WebGL, sorry :-(");
     }
 }
 
-function resize(canvas) {
+function resize(canvas, over) {
   // Lookup the size the browser is displaying the canvas.
   var displayWidth  = canvas.clientWidth;
   var displayHeight = canvas.clientHeight;
@@ -25,6 +29,8 @@ function resize(canvas) {
     // Make the canvas the same size
     canvas.width  = displayWidth;
     canvas.height = displayHeight;
+    over.width    = displayWidth;
+    over.height   = displayHeight;
 
     gl.viewportWidth  = canvas.width;
     gl.viewportHeight = canvas.height;
@@ -241,10 +247,35 @@ function setMatrixUniforms() {
     gl.uniformMatrix3fv(shaderProgram.normal_uniformId, false, computeNormal3x3());
 }
 
+
+
 function drawScene() {
     gameManager.draw();
+    drawText();
 }
 
+function drawText() {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.textAlign = "left";
+    ctx.font="25px Verdana";
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'black';
+    var text = "Score: "+gameManager.score.toFixed(0);
+    ctx.fillText(text, 1150, 40);
+    ctx.strokeText(text, 1150, 40);
+    text = "Lives left: "+gameManager.lives;
+    ctx.fillText(text, 1150, 80);
+    ctx.strokeText(text, 1150, 80);
+    ctx.textAlign = "center";
+    if (gameManager.gameOver) {
+        ctx.fillText("Game Over! Press R to restart the game", 700, 350);
+        ctx.strokeText("Game Over! Press R to restart the game", 700, 350);
+    }
+    else if(gameManager.pause) {
+        ctx.fillText("Game is paused!", 700, 350);
+        ctx.strokeText("Game is paused!", 700, 350);
+    }
+}
 
 var lastTime = 0;
 // Used to make us "jog" up and down as we move forward.
@@ -254,7 +285,7 @@ function animate() {
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
         var elapsed = timeNow - lastTime;
-            gameManager.update(elapsed/3);
+            gameManager.update(elapsed);
         }
     lastTime = timeNow;
 }
@@ -271,8 +302,9 @@ function tick() {
 
 function webGLStart() {
     var canvas = document.getElementById("micromachines-canvas");
-    initGL(canvas);
-    resize(canvas);
+    var overCanvas = document.getElementById("text-canvas");
+    initGL(canvas, overCanvas);
+    resize(canvas, overCanvas);
   	gameManager = new GameManager(gl.viewportWidth, gl.viewportHeight);
     loadImages(["resources/tiled.gif", "resources/lightwood.gif", "resources/glass.gif", "resources/tire.gif", "resources/tree.gif"], createTextures);
     initBuffers();

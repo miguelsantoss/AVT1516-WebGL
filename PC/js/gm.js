@@ -1,7 +1,7 @@
 function GameManager(width, height) {
 	this.width          = width;
 	this.height         = height;
-    this.lives          = 50;
+    this.lives          = 5;
     this.gameOver       = false;
     this.pause          = false;
 
@@ -15,6 +15,7 @@ function GameManager(width, height) {
     this.fog.density    = 0.077;
     this.fog.mode       = 1;
     this.day            = true;
+    this.score          = 0;
 
 
     this.createCameras();
@@ -22,6 +23,7 @@ function GameManager(width, height) {
     this.createLights();
 
 	this.matrices = new MatrixStack();
+    this.loadFont();
     // gl.depthFunc(gl.LESS);
 }
 
@@ -82,6 +84,7 @@ GameManager.prototype.draw = function() {
 GameManager.prototype.update = function(delta_t) {
     if (this.pause || this.gameOver) return;
     this.car.update(delta_t);
+    this.score += this.car.distanceDone*100;
     this.updateHeadLights();
     if (!this.car.checkInside(this.world)) {
         this.lives--;
@@ -120,6 +123,78 @@ GameManager.prototype.update = function(delta_t) {
     }
 
 
+}
+
+GameManager.prototype.loadFont = function() {
+    var vertices = [
+        0.0, 0.0,
+        16.0, 0.0,
+        16.0, 16.0,
+        0.0, 16.0
+    ];
+
+    var texCoords = [
+        0.0, 0.0,
+        0.0, 0.0,
+        0.0, 0.0,
+        0.0, 0.0
+    ];
+    this.font = {};
+    this.font.VertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.font.VertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.font.VertexPositionBuffer.itemSize = 2;
+    this.font.VertexPositionBuffer.numItems = 4;
+
+    this.font.VertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.font.VertexTextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.DYNAMIC_DRAW);
+    this.font.VertexTextureCoordBuffer.itemSize = 2;
+    this.font.VertexTextureCoordBuffer.numItems = 4;
+}
+
+GameManager.prototype.drawString = function(x,y,string) {
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, textures[5]);
+    gl.uniform1i(shaderProgram.texmap1, 0);
+
+    gl.uniform1i(shaderProgram.writeMode, 1);
+    gl.uniform1i(shaderProgram.writeMode, 1);
+
+    gameManager.matrices.pushMatrix(modelID);
+    mat4.identity(modelMatrix);
+    mat4.translate(modelMatrix, modelMatrix, [x, y, 1]);
+    var oneOverSixteen = 1.0/16.0;
+    var texCoords = [];
+    for(var i = 0; i < string.length; i++) {
+        var ch = string[i].charCodeAt();
+        var xPos = (ch % 16.0) * oneOverSixteen;
+        var yPos = (ch / 16.0) * oneOverSixteen;
+
+        texCoords[0] = xPos;
+        texCoords[1] = 1.0 - yPos - oneOverSixteen;
+
+        texCoords[2] = xPos + oneOverSixteen;
+        texCoords[3] = 1.0 - yPos - oneOverSixteen;
+
+        texCoords[4] = xPos + oneOverSixteen;
+        texCoords[5] = 1.0 - yPos - 0.001;
+
+        texCoords[6] = xPos;
+        texCoords[7] = 1.0 - yPos - 0.001;
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.font.VertexTextureCoordBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.DYNAMIC_DRAW);
+        setMatrixUniforms();
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+        mat4.translate(modelMatrix, modelMatrix, [16*0.8, 0.0, 0.0]);
+    }
+    gameManager.matrices.popMatrix(modelID);
+    gl.uniform1i(shaderProgram.writeMode, 0);
+    gl.uniform1i(shaderProgram.writeMode, 0);
+
+    gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 GameManager.prototype.loadWorld = function() {
@@ -250,6 +325,8 @@ GameManager.prototype.createCameras = function() {
     this.activeCamera = 1;
     this.cameras.push(new OrthogonalCamera(-5, 65, -5, 65, -10, 10));
     this.cameras.push(new PerspectiveCamera(degToRad(75), this.width / this.height, 0.1, 100, [0, 1, 0], [1, 1, 1]));
+
+    this.projection = new OrthogonalCamera(0.0, gl.viewportWidth, 0.0, gl.viewportHeight, -1.0, 1.0);
 }
 
 GameManager.prototype.createOranges = function() {
@@ -450,6 +527,7 @@ GameManager.prototype.updateHeadLights = function() {
 GameManager.prototype.restartGame = function() {
     this.gameOver = false;
     this.lives = 5;
+    this.score = 0;
     this.restartCar();
     this.lights.directional[0].isEnabled = ON;
     this.lights.pointLights[0].isEnabled = OFF;
