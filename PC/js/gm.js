@@ -16,6 +16,7 @@ function GameManager(width, height) {
     this.fog.mode       = 1;
     this.day            = true;
     this.score          = 0;
+    this.flare          = new Flare();
 
     this.createCameras();
     this.createObjects();
@@ -87,7 +88,7 @@ GameManager.prototype.draw = function() {
 			gl.stencilMask(0x00); // Don't write anything to stencil buffer
 			gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
 			gl.depthMask(0xFF); // Write to depth buffer
-						this.car.drawReflection();
+			this.car.drawReflection();
 		gl.disable(gl.STENCIL_TEST);
 
 		for(var i = 0; i < this.oranges.length; i++) {
@@ -107,15 +108,14 @@ GameManager.prototype.draw = function() {
         this.particles[i].draw();
     }
 
-		this.car.draw();
+	this.car.draw();
+    this.sun.draw();
 
-	/*	mat4.identity(modelMatrix);
-		mat4.identity(viewMatrix);
-		mat4.identity(projectionMatrix);
-		mat4.ortho(projectionMatrix, 0, gl.viewportWidth, 0,  gl.viewportHeight, -10,10 );
-		mat4.lookAt(viewMatrix, [0, 5, 0], [0, 0, 0], [1, 0, 0]);
-		this.car.draw();*/
-
+	mat4.identity(modelMatrix);
+	mat4.identity(viewMatrix);
+	mat4.identity(projectionMatrix);
+	mat4.ortho(projectionMatrix, 0, gl.viewportWidth, 0,  gl.viewportHeight, -10,10 );
+	this.flare.draw();
 }
 
 GameManager.prototype.update = function(delta_t) {
@@ -287,6 +287,7 @@ GameManager.prototype.createObjects = function() {
     this.createMilk();
     this.particles = [];
     this.createParticles(400);
+    this.sun = new Sun([-5.0, 8.0, 5.0]);
 }
 
 GameManager.prototype.createCameras = function() {

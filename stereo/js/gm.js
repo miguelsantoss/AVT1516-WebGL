@@ -16,16 +16,15 @@ function GameManager(width, height) {
     this.fog.mode       = 1;
     this.day            = true;
 
+    this.alpha = 0;
+    this.beta = 0;
+    this.gama = 0;
 
     this.createCameras();
     this.createObjects();
     this.createLights();
 
 	this.matrices = new MatrixStack();
-
-	this.alpha = 0;
-	this.beta = 0;
-	this.gama = 0;
     // gl.depthFunc(gl.LESS);
 }
 
@@ -44,7 +43,7 @@ GameManager.prototype.updatePerspectiveCamera = function() {
 	var newDirection = [position[0] + 5 * direction[0] - this.cameras[1].camX * direction[0], position[1] - this.cameras[1].camY, position[2] + 5 * direction[2] - this.cameras[1].camZ * direction[2]];
 	this.cameras[1].updateLookAt(newPosition, newDirection);
 	newPosition  = [position[0] -0 * direction[0], position[1] + 0.3, position[2] -0 * direction[2]];
-    this.cameras[2].updateLookAt(newPosition, direction);
+	this.cameras[2].updateLookAt(newPosition, direction);
 }
 
 GameManager.prototype.draw = function(){
@@ -59,9 +58,8 @@ GameManager.prototype.draw = function(){
         mat4.identity(viewMatrix);
         gl.viewport(0, 0, gl.viewportWidth/2, gl.viewportHeight);
             this.cameras[2].computeLeftProjection();
-						mat4.rotateY(projectionMatrix, projectionMatrix, -this.alpha);
-						mat4.rotateX(projectionMatrix, projectionMatrix, this.beta);
-						//mat4.rotateZ(projectionMatrix, projectionMatrix, -this.gamma);
+            mat4.rotateY(projectionMatrix, projectionMatrix, -this.alpha);
+            mat4.rotateX(projectionMatrix, projectionMatrix, this.beta);
             this.drawObjects();
 
         //right
@@ -70,23 +68,23 @@ GameManager.prototype.draw = function(){
         mat4.identity(viewMatrix);
         gl.viewport(gl.viewportWidth/2, 0, gl.viewportWidth/2, gl.viewportHeight);
             this.cameras[2].computeRightProjection();
-						mat4.rotateY(projectionMatrix, projectionMatrix, -this.alpha);
-						mat4.rotateX(projectionMatrix, projectionMatrix, this.beta);
+            mat4.rotateY(projectionMatrix, projectionMatrix, -this.alpha);
+            mat4.rotateX(projectionMatrix, projectionMatrix, this.beta);
             this.drawObjects();
 }
 
 GameManager.prototype.drawObjects = function() {
-	//gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-    //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	/*gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+    this.setUpFog();
 
-
-    /*mat4.identity(modelMatrix);
+    mat4.identity(modelMatrix);
     mat4.identity(viewMatrix);
-    mat4.identity(projectionMatrix);*/
+    mat4.identity(projectionMatrix);
 
-    //gameManager.updatePerspectiveCamera();
-    //gameManager.activeCameraProj();
+    gameManager.updatePerspectiveCamera();
+    gameManager.activeCameraProj();*/
     gameManager.setUpLightsUniforms();
 
     gl.uniform1i(shaderProgram.particleMode, 0);
@@ -152,6 +150,7 @@ GameManager.prototype.update = function(delta_t) {
         }
         this.cheerios[i].update(delta_t);
     }
+
 
 }
 
@@ -283,7 +282,7 @@ GameManager.prototype.createCameras = function() {
     this.activeCamera = 1;
     this.cameras.push(new OrthogonalCamera(-5, 65, -5, 65, -10, 10));
     this.cameras.push(new PerspectiveCamera(degToRad(75), this.width / this.height, 0.1, 100, [0, 1, 0], [1, 1, 1]));
-    this.cameras.push(new StereoCamera(degToRad(75), this.width / this.height, 0.05, 100, [0, 1, 0], [1, 1, 1], [0, 1, 0], 30, degToRad(45)));
+		this.cameras.push(new StereoCamera(degToRad(75), this.width / this.height, 0.05, 100, [0, 1, 0], [1, 1, 1], [0, 1, 0], 30, degToRad(45)));
 }
 
 GameManager.prototype.createOranges = function() {
@@ -297,7 +296,7 @@ GameManager.prototype.createButters = function() {
 }
 
 GameManager.prototype.createCheerios = function() {
-    this.cheerios.push(new Cheerio([3.10, 1.1, 3.26]));
+    this.cheerios.push(new Cheerio([4.10, 1.1, 4.26]));
     this.cheerios.push(new Cheerio([5.59, 1.1, 3.26]));
     this.cheerios.push(new Cheerio([8.34, 1.1, 3.26]));
     this.cheerios.push(new Cheerio([11.65, 1.1, 2.93]));

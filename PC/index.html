@@ -74,6 +74,8 @@
 			uniform bool useTextures;
 			uniform bool writingMode;
 			uniform bool particle;
+			uniform bool sun;
+			uniform bool flare;
 			uniform int texMode;
 
 			uniform vec3 overrideColor;
@@ -189,9 +191,24 @@
 					}
 				}
 				else {
-					vec4 color = vec4(0.88, 0.55, 0.21, alpha);
-					vec4 tex = texture2D(texmap1, tex_coord);
-					gl_FragColor = tex * color * 2.0;
+					if (sun) {
+						vec4 texel = texture2D(texmap1, tex_coord);
+						vec4 texel1 = texture2D(texmap2, tex_coord);
+						vec4 tex = texel * texel1;
+						gl_FragColor = tex;
+						if (gl_FragColor.a < 0.01)
+							discard;
+					}
+					else if (flare) {
+						gl_FragColor = texture2D(texmap1, tex_coord) * mat.diffuse;
+						if (gl_FragColor.a < 0.01)
+							discard;
+					}
+					else {
+						vec4 color = vec4(0.88, 0.55, 0.21, alpha);
+						vec4 tex = texture2D(texmap1, tex_coord);
+						gl_FragColor = tex * color * 2.0;
+					}
 				}
 		    }
 		</script>
@@ -215,6 +232,8 @@
 		<script type="text/javascript" src="js/objects/billboards.js"></script>
 		<script type="text/javascript" src="js/objects/particle.js"></script>
 		<script type="text/javascript" src="js/objects/milk.js"></script>
+		<script type="text/javascript" src="js/objects/sun.js"></script>
+		<script type="text/javascript" src="js/objects/lens.js"></script>
 		<script type="text/javascript" src="js/script.js"></script>
 		<style type="text/css">
 		    #loadingtext {
