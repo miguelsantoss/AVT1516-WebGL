@@ -306,7 +306,8 @@ function webGLStart() {
     initGL(canvas, overCanvas);
     resize(canvas, overCanvas);
   	gameManager = new GameManager(gl.viewportWidth, gl.viewportHeight);
-    loadImages(["resources/tiled.gif", "resources/lightwood.gif", "resources/glass.gif", "resources/tire.gif", "resources/tree.gif", "resources/milk.gif"], createTextures);
+    loadImages(["resources/tiled.gif", "resources/lightwood.gif", "resources/glass.gif", "resources/tire.gif", "resources/tree.gif", "resources/particle.gif", "resources/milk.gif", 
+                "resources/lens_flare/Flare1.gif", "resources/lens_flare/Flare2.gif", "resources/lens_flare/Flare3.gif", "resources/lens_flare/Flare4.gif", "resources/lens_flare/Sun.gif", "resources/lens_flare/SunLight.gif"], createTextures);
     initBuffers();
     initShaders();
 
@@ -412,5 +413,9 @@ function handleKeys() {
     if (currentlyPressedKeys[82]) {//S
         if (gameManager.lives <= 0)
             gameManager.restartGame();
+    }
+    if(currentlyPressedKeys[84]) {
+        console.log("reset");
+        gameManager.resetParticles();
     }
 }

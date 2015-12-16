@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>Micromachines</title>
-
+		
 		<script id="shader-vs" type="x-shader/x-vertex">
 			#version 100
 		    attribute vec3 VertexNormal;
@@ -32,7 +32,7 @@
 				else {
 					tex_coord = vtexCoord;
 					gl_Position = m_pvm * vec4(vVertex, 0.0, 1.0);
-				}
+				}	
 		    }
 		</script>
 
@@ -82,6 +82,7 @@
 			uniform int fogMode;
 			uniform vec3 fogColor;
 			uniform float fogDensity;
+			uniform float alpha;
 
 			uniform sampler2D texmap1;
 			uniform sampler2D texmap2;
@@ -188,7 +189,9 @@
 					}
 				}
 				else {
-
+					vec4 color = vec4(0.88, 0.55, 0.21, alpha);
+					vec4 tex = texture2D(texmap1, tex_coord);
+					gl_FragColor = tex * color * 2.0;
 				}
 		    }
 		</script>
@@ -230,7 +233,7 @@
 			canvas {
 				width: 100%;
 				height: 100%;
-
+				
 			}
 			#micromachines-canvas {
 				position: absolute;

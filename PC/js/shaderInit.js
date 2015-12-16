@@ -80,9 +80,10 @@ function initShaders() {
     shaderProgram.fogMode = gl.getUniformLocation(shaderProgram, "fogMode");
     shaderProgram.fogColor = gl.getUniformLocation(shaderProgram, "fogColor");
     shaderProgram.fogDensity = gl.getUniformLocation(shaderProgram, "fogDensity");
-    shaderProgram.particleMode = gl.getUniformLocation(shaderProgram, "particleMode");
+    shaderProgram.particleMode = gl.getUniformLocation(shaderProgram, "particle");
     shaderProgram.sun = gl.getUniformLocation(shaderProgram, "sun");
     shaderProgram.flares = gl.getUniformLocation(shaderProgram, "flares");
     shaderProgram.uniColor = gl.getUniformLocation(shaderProgram, "overrideColor");
+    shaderProgram.alpha    = gl.getUniformLocation(shaderProgram, "alpha");
 }
 

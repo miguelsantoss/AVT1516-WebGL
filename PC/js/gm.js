@@ -81,10 +81,13 @@ GameManager.prototype.draw = function() {
     for(var i = 0; i < this.trees.length; i++) {
         this.trees[i].draw();
     }
-		for(var i = 0; i < this.milks.length; i++) {
-				this.milks[i].draw();
-		}
     this.car.draw();
+    for(var i = 0; i < this.milks.length; i++) {
+            this.milks[i].draw();
+    }
+    for(var i = 0; i < this.particles.length; i++) {
+        this.particles[i].draw();
+    }
 }
 
 GameManager.prototype.update = function(delta_t) {
@@ -128,7 +131,7 @@ GameManager.prototype.update = function(delta_t) {
         this.cheerios[i].update(delta_t);
     }
 
-
+    this.updateParticles(0.125);
 }
 
 GameManager.prototype.loadWorld = function() {
@@ -251,9 +254,9 @@ GameManager.prototype.createObjects = function() {
     this.cheerios = [];
     this.createCheerios();
     this.trees = [];
-		this.milks = [];
     this.createTreeBillboards();
-		this.createMilk();
+    this.milks = [];
+    this.createMilk();
     this.particles = [];
     this.createParticles(400);
 }
@@ -261,7 +264,7 @@ GameManager.prototype.createObjects = function() {
 GameManager.prototype.createCameras = function() {
     this.cameras = [];
     this.activeCamera = 1;
-    this.cameras.push(new OrthogonalCamera(-5, 65, -5, 65, -10, 10));
+    this.cameras.push(new OrthogonalCamera(-5, 25, 0, 20, -10, 10));
     this.cameras.push(new PerspectiveCamera(degToRad(75), this.width / this.height, 0.1, 100, [0, 1, 0], [1, 1, 1]));
 
     this.projection = new OrthogonalCamera(0.0, gl.viewportWidth, 0.0, gl.viewportHeight, -1.0, 1.0);
@@ -303,15 +306,15 @@ GameManager.prototype.createTreeBillboards = function() {
     this.trees.push(new TreeBillboard([4.41, 2.5, 5.52], textures[1]));
 }
 
+GameManager.prototype.createParticles = function(num) {
+    for(var i = 0; i < num; i++) {
+        this.particles.push(new Particle([0.1, -0.15, 0.0], [0.88, 0.55, 0.21], 1.0, 0.005));
+    }
+}
+
 GameManager.prototype.createMilk = function() {
     this.milks.push(new Milk([14.08, 1.01, 5.52]));
     this.milks.push(new Milk([4.41, 1.01, 11.56]));
-}
-
-GameManager.prototype.createParticles = function(num) {
-    for(var i = 0; i < num; i++) {
-        this.particles.push(new Particle([5.0, 5.0, 5.0], [0.1, -0.15, 0.0], [0.88, 0.55, 0.21], 1.0, 0.005));
-    }
 }
 
 GameManager.prototype.createLights = function() {
@@ -524,4 +527,10 @@ GameManager.prototype.setUpFog = function() {
     gl.uniform1f(shaderProgram.fogDensity,   this.fog.density);
     gl.uniform1i(shaderProgram.fogMode,      this.fog.mode);
     gl.uniform3fv(shaderProgram.fogColor,    [this.fog.color[0], this.fog.color[1], this.fog.color[2]]);
+}
+
+GameManager.prototype.resetParticles = function() {
+    for(var i = 0; i < this.particles.length; i++) {
+        this.particles[i].resetPos();
+    }
 }

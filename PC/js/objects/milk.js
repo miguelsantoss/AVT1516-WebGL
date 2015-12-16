@@ -19,7 +19,7 @@ Milk.prototype.draw = function() {
     mat4.rotate(modelMatrix, modelMatrix, degToRad(90), [1, 0, 0]);
     //this.billboardRotation();
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, textures[5]);
+    gl.bindTexture(gl.TEXTURE_2D, textures[6]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
     gl.uniform4fv(gl.getUniformLocation(shaderProgram, "mat.ambient"), this.material.ambient);
