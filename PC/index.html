@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>Micromachines</title>
-		
+
 		<script id="shader-vs" type="x-shader/x-vertex">
 			#version 100
 		    attribute vec3 VertexNormal;
@@ -32,7 +32,7 @@
 				else {
 					tex_coord = vtexCoord;
 					gl_Position = m_pvm * vec4(vVertex, 0.0, 1.0);
-				}	
+				}
 		    }
 		</script>
 
@@ -211,6 +211,7 @@
 		<script type="text/javascript" src="js/objects/orange.js"></script>
 		<script type="text/javascript" src="js/objects/billboards.js"></script>
 		<script type="text/javascript" src="js/objects/particle.js"></script>
+		<script type="text/javascript" src="js/objects/milk.js"></script>
 		<script type="text/javascript" src="js/script.js"></script>
 		<style type="text/css">
 		    #loadingtext {
@@ -229,7 +230,7 @@
 			canvas {
 				width: 100%;
 				height: 100%;
-				
+
 			}
 			#micromachines-canvas {
 				position: absolute;

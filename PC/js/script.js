@@ -306,7 +306,7 @@ function webGLStart() {
     initGL(canvas, overCanvas);
     resize(canvas, overCanvas);
   	gameManager = new GameManager(gl.viewportWidth, gl.viewportHeight);
-    loadImages(["resources/tiled.gif", "resources/lightwood.gif", "resources/glass.gif", "resources/tire.gif", "resources/tree.gif"], createTextures);
+    loadImages(["resources/tiled.gif", "resources/lightwood.gif", "resources/glass.gif", "resources/tire.gif", "resources/tree.gif", "resources/milk.gif"], createTextures);
     initBuffers();
     initShaders();
 

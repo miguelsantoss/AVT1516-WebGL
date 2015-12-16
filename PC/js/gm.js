@@ -81,6 +81,9 @@ GameManager.prototype.draw = function() {
     for(var i = 0; i < this.trees.length; i++) {
         this.trees[i].draw();
     }
+		for(var i = 0; i < this.milks.length; i++) {
+				this.milks[i].draw();
+		}
     this.car.draw();
 }
 
@@ -248,7 +251,9 @@ GameManager.prototype.createObjects = function() {
     this.cheerios = [];
     this.createCheerios();
     this.trees = [];
+		this.milks = [];
     this.createTreeBillboards();
+		this.createMilk();
     this.particles = [];
     this.createParticles(400);
 }
@@ -296,6 +301,11 @@ GameManager.prototype.createCheerios = function() {
 GameManager.prototype.createTreeBillboards = function() {
     this.trees.push(new TreeBillboard([14.08, 2.5, 11.56], textures[1]));
     this.trees.push(new TreeBillboard([4.41, 2.5, 5.52], textures[1]));
+}
+
+GameManager.prototype.createMilk = function() {
+    this.milks.push(new Milk([14.08, 1.01, 5.52]));
+    this.milks.push(new Milk([4.41, 1.01, 11.56]));
 }
 
 GameManager.prototype.createParticles = function(num) {
