@@ -65,6 +65,7 @@ GameManager.prototype.draw = function() {
     gl.uniform1i(shaderProgram.tex_loc_1, 0);
     gl.uniform1i(shaderProgram.texUse, 1);
     gl.uniform3fv(shaderProgram.uniColor, [1.0, 1.0, 1.0]);
+
 		gl.depthMask(0x00);
 		this.drawWorld();
 
@@ -81,14 +82,12 @@ GameManager.prototype.draw = function() {
 						this.milks[i].draw();
 				}
 
-			//gl.disable(gl.CULL_FACE);
 			// Draw cube reflection
 			gl.stencilFunc(gl.EQUAL, 1, 0xFF); // Pass test if stencil value is 1
 			gl.stencilMask(0x00); // Don't write anything to stencil buffer
 			gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
 			gl.depthMask(0xFF); // Write to depth buffer
 						this.car.drawReflection();
-			//gl.enable(gl.CULL_FACE);
 		gl.disable(gl.STENCIL_TEST);
 
 		for(var i = 0; i < this.oranges.length; i++) {
@@ -104,9 +103,6 @@ GameManager.prototype.draw = function() {
         this.trees[i].draw();
     }
 
-    for(var i = 0; i < this.milks.length; i++) {
-            this.milks[i].draw();
-    }
     for(var i = 0; i < this.particles.length; i++) {
         this.particles[i].draw();
     }
@@ -119,7 +115,7 @@ GameManager.prototype.draw = function() {
 		mat4.ortho(projectionMatrix, 0, gl.viewportWidth, 0,  gl.viewportHeight, -10,10 );
 		mat4.lookAt(viewMatrix, [0, 5, 0], [0, 0, 0], [1, 0, 0]);
 		this.car.draw();*/
->>>>>>> Reflections
+
 }
 
 GameManager.prototype.update = function(delta_t) {
