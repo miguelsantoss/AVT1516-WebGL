@@ -1,7 +1,7 @@
 function Car(position, direction) {
 	this.position = position;
 	this.direction = direction;
-	
+
 	this.acceleration = 0;
 	this.speed = 0;
 	this.speedVec3 = [0, 0, 0];
@@ -9,7 +9,7 @@ function Car(position, direction) {
 	this.acceleration_input = 0;
 	this.carAngle = 0;
 	this.wheel_angle = 0;
-	this.steer_angle = 1; 
+	this.steer_angle = 1;
 	this.steer_input = 0;
 	this.steer_factor = Math.PI/4;
 	this.current_speed = 0;
@@ -42,7 +42,7 @@ Car.prototype.update = function(delta_t) {
 	this.direction = [this.direction[0] * Math.cos(this.steer_angle) - this.direction[2] * Math.sin(this.steer_angle),
 					  0,
 					  this.direction[0] * Math.sin(this.steer_angle) + this.direction[2] * Math.cos(this.steer_angle)];
-	
+
 	this.backwards_friction = -this.speed * this.backwards_friction_factor;
 
 	this.speed = this.speed + this.backwards_friction * delta_t;
@@ -60,6 +60,20 @@ Car.prototype.update = function(delta_t) {
 }
 
 Car.prototype.draw = function() {
+	//this.draw();
+	gameManager.matrices.pushMatrix(modelID);
+	mat4.scale(modelMatrix, modelMatrix, [1, -1, 1]);
+	this.drawCar();
+	gameManager.matrices.popMatrix(modelID);
+}
+
+Car.prototype.drawReflection = function() {
+	gameManager.matrices.pushMatrix(modelID);
+	mat4.scale(modelMatrix, modelMatrix, [0, -1.0, 0]);
+	this.drawCar();
+	gameManager.matrices.popMatrix(modelID);
+}
+Car.prototype.drawCar = function() {
 	gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textures[1]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);

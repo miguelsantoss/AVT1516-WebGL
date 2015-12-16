@@ -5,7 +5,7 @@ var cube = {}, torus = {}, quad = {}, sphere = {};
 
 function initGL(canvas, over) {
     try {
-        gl = canvas.getContext("experimental-webgl");
+        gl = canvas.getContext("experimental-webgl", {stencil:true});
         gl.viewportWidth  = canvas.width;
         gl.viewportHeight = canvas.height;
         ctx = over.getContext("2d");

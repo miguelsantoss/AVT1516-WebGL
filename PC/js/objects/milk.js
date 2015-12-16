@@ -17,7 +17,7 @@ Milk.prototype.draw = function() {
     mat4.translate(modelMatrix, modelMatrix, this.position);
     mat4.scale(modelMatrix, modelMatrix, [3.00, 3.00, 3.00]);
     mat4.rotate(modelMatrix, modelMatrix, degToRad(90), [1, 0, 0]);
-    //this.billboardRotation();
+
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textures[6]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
@@ -32,30 +32,6 @@ Milk.prototype.draw = function() {
 
     gameManager.matrices.popMatrix(modelID);
 
-    gl.enable(gl.DEPTH_TEST);
+    //gl.enable(gl.DEPTH_TEST);
 	gl.disable(gl.BLEND);
-}
-
-Milk.prototype.billboardRotation = function() {
-	var xcamX, xcamZ;
-	if (gameManager.activeCamera == 0) {
-		xcamX = 0;
-		xcamZ = 0;
-	} else if (gameManager.activeCamera == 1) {
-		xcamX = gameManager.cameras[1].position[0];
-		xcamZ = gameManager.cameras[1].position[2];
-	}
-
-	var objToCam = [];
-	objToCam[0] = xcamX - this.position[0];
-	objToCam[1] = 0;
-	objToCam[2] = xcamZ - this.position[2];
-
-	var lookAt = [0, 0, 1];
-
-	var objToCam   = normalize(objToCam);
-	var rotateAxis = crossProduct(lookAt, objToCam);
-	var angleCos   = innerProduct(lookAt, objToCam);
-
-	mat4.rotate(modelMatrix, modelMatrix, Math.acos(angleCos), rotateAxis);
 }
