@@ -73,6 +73,7 @@
 			uniform LightProperties lights[numberOfLights];
 			uniform bool useTextures;
 			uniform bool writingMode;
+			uniform bool particle;
 			uniform int texMode;
 
 			uniform vec3 overrideColor;
@@ -91,98 +92,103 @@
 			varying vec2 tex_coord;
 
 		    void main(void) {
-				if (!writingMode) {
-			    	vec3 scatteredLight = vec3(0.0); // or, to a global ambient light
-					vec3 reflectedLight = vec3(0.0);
-					vec4 texel, texel1;
-					texel = texture2D(texmap1, tex_coord);
-					texel1 = texture2D(texmap2, tex_coord);
-					vec4 tex = vec4(1.0);
-					if (useTextures) {
-						if (texMode == 2) {
-							tex = texel * texel1;
-						}
-						else if (texMode == 1) {
-							tex = texel;
-						}
-					}
-					for (int light = 0; light < numberOfLights; light++) {
-
-						if (lights[light].isEnabled) {
-							vec3 halfVector;
-							vec3 lightDirection;
-							if (lights[light].isSpot) {
-								lightDirection  = vec3(lights[light].position);
+		    	if(!particle) {
+					if (!writingMode) {
+				    	vec3 scatteredLight = vec3(0.0); // or, to a global ambient light
+						vec3 reflectedLight = vec3(0.0);
+						vec4 texel, texel1;
+						texel = texture2D(texmap1, tex_coord);
+						texel1 = texture2D(texmap2, tex_coord);
+						vec4 tex = vec4(1.0);
+						if (useTextures) {
+							if (texMode == 2) {
+								tex = texel * texel1;
 							}
-							else {
-								lightDirection = lights[light].position_point;
+							else if (texMode == 1) {
+								tex = texel;
 							}
-							float attenuation = 1.0;
+						}
+						for (int light = 0; light < numberOfLights; light++) {
 
-							if (lights[light].isLocal) {
-								lightDirection = lightDirection - vec3(Position);
-								float lightDistance = length(lightDirection);
-								lightDirection = lightDirection / lightDistance;
-								attenuation = 1.0 /
-												(lights[light].constantAttenuation
-													+ lights[light].linearAttenuation * lightDistance
-													+ lights[light].quadraticAttenuation * lightDistance
-													* lightDistance);
+							if (lights[light].isEnabled) {
+								vec3 halfVector;
+								vec3 lightDirection;
 								if (lights[light].isSpot) {
-									float spotCos = dot(lightDirection, normalize(vec3(-lights[light].direction)));
+									lightDirection  = vec3(lights[light].position);
+								}
+								else {
+									lightDirection = lights[light].position_point;
+								}
+								float attenuation = 1.0;
 
-									if (spotCos < lights[light].spotCosCutoff) {
-										attenuation = 0.0;
+								if (lights[light].isLocal) {
+									lightDirection = lightDirection - vec3(Position);
+									float lightDistance = length(lightDirection);
+									lightDirection = lightDirection / lightDistance;
+									attenuation = 1.0 /
+													(lights[light].constantAttenuation
+														+ lights[light].linearAttenuation * lightDistance
+														+ lights[light].quadraticAttenuation * lightDistance
+														* lightDistance);
+									if (lights[light].isSpot) {
+										float spotCos = dot(lightDirection, normalize(vec3(-lights[light].direction)));
+
+										if (spotCos < lights[light].spotCosCutoff) {
+											attenuation = 0.0;
+										}
+										else
+											attenuation *= pow(spotCos, lights[light].spotExponent);
 									}
-									else
-										attenuation *= pow(spotCos, lights[light].spotExponent);
+
+									halfVector = normalize(lightDirection + EyeDirection);
+								}
+								else {
+									lightDirection = normalize(vec3(-lights[light].direction));
+									halfVector = normalize(lightDirection + EyeDirection / 2.0);
 								}
 
-								halfVector = normalize(lightDirection + EyeDirection);
+								float diffuse = max(0.0, dot(Normal, lightDirection));
+								float specular = max(0.0, dot(Normal, halfVector));
+								if (diffuse == 0.0)
+									specular = 0.0;
+								else
+								specular = pow(specular, mat.shininess);
+
+								// Accumulate all the lights’ effects
+								scatteredLight += lights[light].color * mat.ambient.rgb * attenuation + lights[light].color * mat.diffuse.rgb * diffuse * attenuation;
+								reflectedLight += lights[light].color * mat.specular.rgb * specular * attenuation;
 							}
-							else {
-								lightDirection = normalize(vec3(-lights[light].direction));
-								halfVector = normalize(lightDirection + EyeDirection / 2.0);
+						}
+						vec3 frag_rgb = min((scatteredLight + reflectedLight)*tex.rgb, vec3(1.0));
+						if (fogIsEnabled) {
+							float dist = length(Position.xyz);
+							float fogAmount = 0.0;
+							if (fogMode == 0) {
+								fogAmount = (15.0 - dist)/(15.0 - 7.5);
 							}
-
-							float diffuse = max(0.0, dot(Normal, lightDirection));
-							float specular = max(0.0, dot(Normal, halfVector));
-							if (diffuse == 0.0)
-								specular = 0.0;
-							else
-							specular = pow(specular, mat.shininess);
-
-							// Accumulate all the lights’ effects
-							scatteredLight += lights[light].color * mat.ambient.rgb * attenuation + lights[light].color * mat.diffuse.rgb * diffuse * attenuation;
-							reflectedLight += lights[light].color * mat.specular.rgb * specular * attenuation;
+							else if (fogMode == 1) {
+								fogAmount = 1.0 / exp(dist * fogDensity);
+							}
+							else if (fogMode == 2) {
+								fogAmount = 1.0 / exp((dist * fogDensity) * (dist * fogDensity));
+							}
+							fogAmount = clamp(fogAmount, 0.0, 1.0);
+							frag_rgb =  mix(fogColor, frag_rgb, fogAmount);
 						}
+						gl_FragColor = vec4(frag_rgb, mat.diffuse.a*tex.a);
+
+						if (tex.a < 0.01)
+							discard;
+				    }
+				    else {
+						vec4 col = vec4(1,1,1,1);
+						gl_FragColor = texture2D(texmap1, tex_coord)*col;
+						if (gl_FragColor.rgb == vec3(0.0))
+							discard;
 					}
-					vec3 frag_rgb = min((scatteredLight + reflectedLight)*tex.rgb, vec3(1.0));
-					if (fogIsEnabled) {
-						float dist = length(Position.xyz);
-						float fogAmount = 0.0;
-						if (fogMode == 0) {
-							fogAmount = (15.0 - dist)/(15.0 - 7.5);
-						}
-						else if (fogMode == 1) {
-							fogAmount = 1.0 / exp(dist * fogDensity);
-						}
-						else if (fogMode == 2) {
-							fogAmount = 1.0 / exp((dist * fogDensity) * (dist * fogDensity));
-						}
-						fogAmount = clamp(fogAmount, 0.0, 1.0);
-						frag_rgb =  mix(fogColor, frag_rgb, fogAmount);
-					}
-					gl_FragColor = vec4(frag_rgb, mat.diffuse.a*tex.a);
+				}
+				else {
 
-					if (tex.a < 0.01)
-						discard;
-			    }
-			    else {
-					vec4 col = vec4(1,1,1,1);
-					gl_FragColor = texture2D(texmap1, tex_coord)*col;
-					if (gl_FragColor.rgb == vec3(0.0))
-						discard;
 				}
 		    }
 		</script>
@@ -204,6 +210,7 @@
 		<script type="text/javascript" src="js/objects/cheerio.js"></script>
 		<script type="text/javascript" src="js/objects/orange.js"></script>
 		<script type="text/javascript" src="js/objects/billboards.js"></script>
+		<script type="text/javascript" src="js/objects/particle.js"></script>
 		<script type="text/javascript" src="js/script.js"></script>
 		<style type="text/css">
 		    #loadingtext {
